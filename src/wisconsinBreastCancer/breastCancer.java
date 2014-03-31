@@ -292,42 +292,38 @@ public class breastCancer {
 				
 		public void populateGaussianDist(){
 			
-			Double[] gaussianDistribution = {0.001, 0.022, 0.136, 0.341,  0.341, 0.136, 0.022, 0.001};//{0.001, 0.022, 0.136, 0.341,  0.682, 0.818, 0.954, 0.976};//{0.001, 0.022, 0.136, 0.341,  0.341, 0.136, 0.022, 0.001};
+			Double[] gaussianDistribution = {0.001, 0.022, 0.136, 0.341,  0.341, 0.136, 0.022, 0.001};
 			
 			int iLen = 0;
 			int yLen = 0;
 			int kLen = 0;
-			int aLen = 0;
 			
-			aLen = dataInput.length;
 			 
-			for(int i = 0; i < dataInput.length -1 ; i++){//2
+			for(int i = 0; i < dataInput.length -1 ; i++){//10
 				
 				iLen = dataInput[i].length;
 				
-				for(int y = 0; y < dataInput[i].length; y++){//10
+				for(int y = 0; y < dataInput[i].length; y++){//400
 				
 					yLen = dataInput[i][y].length;
 					
 					
 					
-					//any value that is null inside the dataInput array needs 
-					//to be set to a value before sorting occurs
-					for(int h = 0; h < dataInput[i][y].length; h++){//400
+										
+					for(int h = 0; h < dataInput[i][y].length; h++){//
 						
-						if(y == 1)
-							y = 1;
 						if(dataInput[i][y][h] == null){
 							
 							dataInput[i][y][h] = MAX; 
 							
 						}
 						
+						 
 					}
 					
-					for(int h = 0; h< dataInput[i+1][y].length; h++){
+					
+					for(int h = 0; h < dataInput[i][y].length; h++){//
 						
-
 						if(dataInput[i+1][y][h] == null){
 							
 							dataInput[i+1][y][h] = MAX; 
@@ -348,45 +344,55 @@ public class breastCancer {
 
 					dataInput[i+1][y] = tempDbl.clone();
 					
-					Double percentCounter = 0.0;
+										//the length is WIDTH, which = 8 for gaussianDistrBrn
+					for(int k = 0; k < gaussianDistrBtn.M_Count.get(i).length; k++){
 					
-					int rate = 0;
-					Double rate2 = 0.0;
-					Double rate3 = 0.0;
-					Double acumulator1 = 0.0;
-					Double acumulator2 = 0.0;
+						kLen = gaussianDistrBtn.M_Count.get(i).length;
+						
+						Double frequencyM = 0.0;// = gaussianDistribution[k]*dataM1_Counter;
+						Double frequencyB = 0.0;// = gaussianDistribution[k]*dataB1_Counter;
+						
+						int iRangeM = 0,
+							iRangeB = 0;
+						
+						
+							//calculate the frequency
+							frequencyM = gaussianDistribution[k]*dataM1_Counter;
+							frequencyB = gaussianDistribution[k]*dataB1_Counter;							
+							
+							/*iRangeM =  (int) (gaussianDistribution[k]*dataM1_Counter);
+							iRangeB =  (int) (gaussianDistribution[k]*dataB1_Counter);
+							*/
+						
+							iRangeM = (int) (dataM1_Counter/kLen);
+							iRangeB = (int) (dataB1_Counter/kLen);
+						
+						//assign range
+						if(k == 0){
+						 
+							//the range starts with the first element in the sorted array
+							gaussianDistrBtn.M_Count_CONST.get(y)[k] = dataInput[1][y][0];
+							gaussianDistrBtn.B_Count_CONST.get(y)[k] = dataInput[0][y][0];
+														
+							
+						}else{
+							
+							//next we are going to the next element that is at the 
+							//Gaussian Distribution border value
+							gaussianDistrBtn.M_Count_CONST.get(y)[k] = dataInput[1][y][iRangeM*k];
+							
+							gaussianDistrBtn.B_Count_CONST.get(y)[k] = dataInput[0][y][iRangeB*k];
+														 
+							
+						}
 					
-
-
-					for(int k = 0; k < gaussianDistrBtn.B_Count_CONST.get(y).length; k++){//8 size loop
-
-							
-							rate = 0;
-							
-							//*************Handle the B data
-							acumulator1 += gaussianDistribution[k];
-							
-							rate2 = dataB1_Counter*gaussianDistribution[k];
-							 							
-							rate = (int) Math.round(100.00*acumulator1*dataB1_Counter/100.00);
-							
-							gaussianDistrBtn.B_Count_CONST.get(y)[k] = dataInput[0][y][rate];	
-							gaussianDistrBtn.B_Count.get(y)[k] = rate2 ;
-							
-							//***********Handle the M data
-								
-							rate3 = dataM1_Counter*gaussianDistribution[k];
-							
-							acumulator2 += gaussianDistribution[k];
-							rate = (int) Math.round(100.00*acumulator2*dataM1_Counter/100.00);
-							
-							gaussianDistrBtn.M_Count_CONST.get(y)[k] = dataInput[1][y][rate];	
-							gaussianDistrBtn.M_Count.get(y)[k] = rate3;
-							
-							 
-
+						//assign frequency i.e. how many points are within 
+						//this range of the Gaussian distribution
+						gaussianDistrBtn.M_Count.get(y)[k] = 100.00*frequencyM/100.00;
+						gaussianDistrBtn.B_Count.get(y)[k] = 100.00*frequencyB/100.00;
 					}
-					 
+					
+					//assign frequency count
 				}
 				
 			}

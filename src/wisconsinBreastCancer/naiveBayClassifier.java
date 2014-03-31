@@ -180,7 +180,13 @@ public class naiveBayClassifier {
 					
 					end1 = gaussianDistrBtn.B_Count_CONST.get(i)[j];
 					end2 = gaussianDistrBtn.B_Count_CONST.get(i)[j-1];
-					end4 = end3 = end1-end2;
+					end3 = 0.0;
+					end4 = 0.0;
+					
+					if(end1 != null && end2 != null)
+					 end3 = end1-end2;
+					else
+						end4 = 0.0;
 					
 					if(end1 == 30000){
 					
@@ -237,7 +243,7 @@ public class naiveBayClassifier {
 					 
 					 
 					System.out.print("\nRange:  "+df.format(end4)+ " for "+  0.0 + " to "+ 
-						  end1 + ":  COUNT = "+ gaussianDistrBtn.M_Count.get(i)[j]);
+						  end1 + ":  COUNT = "+ df.format(gaussianDistrBtn.M_Count.get(i)[j]));
 				}else if( j > 0 && j < gaussianDistrBtn.M_Count_CONST.get(i).length){
 				
 					
@@ -253,14 +259,14 @@ public class naiveBayClassifier {
 						end4 = end3 = end1-end2;
 						
 						System.out.print("\nRange:  "+df.format(end4)+ " for "+  end1 + " to "+ 
-								"remaining"+ ":  COUNT = "+ gaussianDistrBtn.M_Count.get(i)[j]);
+								"remaining"+ ":  COUNT = "+df.format( gaussianDistrBtn.M_Count.get(i)[j]));
 						total += (int) Math.round( 100.00 *gaussianDistrBtn.M_Count.get(i)[j]/100.00);
 						if(j < gaussianDistrBtn.totCountM.length)
 							gaussianDistrBtn.totCountM[j]++;
 						break;
 					}
 					System.out.print("\nRange:  "+df.format(end3)+ " for "+  end2 + " to "+ 
-							end1+ ":  COUNT = "+ gaussianDistrBtn.M_Count.get(i)[j]);
+							end1+ ":  COUNT = "+ df.format(gaussianDistrBtn.M_Count.get(i)[j]));
 				}else if (j+1 < gaussianDistrBtn.M_Count_CONST.get(i).length){
 					
 					/*end1 = gaussianDistrBtn.M_Count_CONST.get(i)[j];
@@ -271,7 +277,7 @@ public class naiveBayClassifier {
 					 
 					 
 					System.out.print("\nRange:  "+df.format(end4)+ " for "+  end1 + " to "+ 
-							"remaining"+ ":  COUNT = "+ gaussianDistrBtn.M_Count.get(i)[j]);
+							"remaining"+ ":  COUNT = "+df.format( gaussianDistrBtn.M_Count.get(i)[j]));
 				}else{}
 				
 				
