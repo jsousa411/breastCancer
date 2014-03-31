@@ -51,11 +51,10 @@ public class breastCancer {
 	static int dataM1_Counter = 0;
 	static int dataB1_Counter = 0;
 	
-	public breastCancer(){
+	public breastCancer(String filePath){
+				
 		
-		
-		
-		readData();//4.iii(3) gets built here
+		readData(filePath);//4.iii(3) gets built here
 		
 		Double widthConst = 0.0;
 		DecimalFormat df2 = new DecimalFormat("###.######");
@@ -119,62 +118,6 @@ public class breastCancer {
 		//4.iii(2) gets built here
 		
 		populateGaussianDist();
-		
-		
-		//count gaussianDistribution frequency
-		//and set boundaries based on normal distribution
-
-		/*Double[] dataM = new Double[totalM];
-		Double[] dataB = new Double[totalB];
-		*/
-		
-		dataM = new Double[values.length-1][212];
-		dataB = new Double[values.length-1][357];
-		
-		int tmpcc = 0,
-			tmpcc1 = 0;
-		
-		int listsize = dataValueList.size();
-		int mytemp =0;
-		
-		for(int i = 0; i < values.length-1; i++){
-			
-			int subarraysize = dataValueList.get(tmpcc+tmpcc1).values.length;
-			
-			for(int j = 0; j < subarraysize-1; j++ ){
-				
-				Double tmpVal = dataValueList.get(i).values[0],
-					   tmpVal2 = dataValueList.get(i).values[j+1];
-				
-				if( tmpVal == 1.0){
-					
-					//build array of data
-					dataM[i][j] = dataValueList.get(i).values[j+1];
-					
-					//if(j == 0)
-						tmpcc++;
-					
-				}else{
-					
-					//if(j == 0)
-						tmpcc1++;
-					
-					
-					dataB[i][j] = tmpVal2;//dataValueList.get(i).values[j+1];
-					
-				}
-				
-				
-			}
-			
-		 }
-		
-		System.out.print("\n\nCount of tmpcc is: "+ tmpcc+" and tmpcc1 is: "+tmpcc1+"\n\n");
-		
-		
-		 //populateGaussianDist(dataValueList.get(k).values);
-		
-		
 		
 	}
 	
@@ -294,21 +237,17 @@ public class breastCancer {
 			
 			Double[] gaussianDistribution = {0.001, 0.022, 0.136, 0.341,  0.341, 0.136, 0.022, 0.001};
 			
-			int iLen = 0;
-			int yLen = 0;
+			 
 			int kLen = 0;
 			
 			 
 			for(int i = 0; i < dataInput.length -1 ; i++){//10
 				
-				iLen = dataInput[i].length;
+				 
 				
 				for(int y = 0; y < dataInput[i].length; y++){//400
 				
-					yLen = dataInput[i][y].length;
-					
-					
-					
+				 
 										
 					for(int h = 0; h < dataInput[i][y].length; h++){//
 						
@@ -608,10 +547,10 @@ public class breastCancer {
 	//Reads one line at at time and stores it in 
 	//breastCancer.values[] array and then adds this array
 	//to a list<> of objects of type breastCancer
-	public boolean readData(){
+	public boolean readData(String filePath){
 		
 				
-		File directory = new File(PATH); //path to directory with data files
+		File directory = new File(filePath); //path to directory with data files
 		
 		BufferedReader br = null;//buffer reader to read from a file
 		String line = ""; //line read from a file

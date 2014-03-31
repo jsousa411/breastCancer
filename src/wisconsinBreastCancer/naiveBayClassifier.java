@@ -20,23 +20,15 @@ public class naiveBayClassifier {
 		//Its constructor iterates through all the data 
 		//in Compute.java object and counts the number of items
 		//in each attribute range
-		breastCancer patients = new breastCancer();
+		kFoldValidator testDriver = new kFoldValidator();
+		
+		testDriver.driver();
 		
 		
-		//Get a BreastCancer object, so we can have data to analyze
-		/*for( int i = 0; i < patients.dataValueList.size(); i++){
-			
-			String tempData = "";
-			for(int j = 0; j < patients.dataValueList.get(i).values.length; j++){
-				
-				tempData += patients.dataValueList.get(i).values[j]+",\t";
-			}
-			
-			//output each set of data read i.e. X(c1,c2,c3...,c10)
-			System.out.print("\nBreast cancer data "+(i+5)+" is:  "+tempData+"\n");
-			System.out.print("\nBreast cancer total "+ patients.probabilityM[0] +"\n");
-		}*/
-
+		breastCancer patients = new breastCancer("KfoldData/");//breastCancer.PATH);
+		
+		
+		
 		
 		DecimalFormat df = new DecimalFormat("####0.000");
 		int total = 0;
@@ -292,7 +284,9 @@ public class naiveBayClassifier {
 			
 		}
 		
-		
+		for(int i = 0; i < 2; i++){
+			testDriver.classifier(patients.dataValueList.get(i).values);
+		}
 		System.out.print("\n\n\n");
 		 
 	}
