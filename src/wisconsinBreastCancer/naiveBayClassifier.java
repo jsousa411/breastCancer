@@ -31,7 +31,12 @@ public class naiveBayClassifier {
 		
 		
 		DecimalFormat df = new DecimalFormat("####0.000");
+		//df.format()
 		int total = 0;
+		
+		//Below are output for validating results 
+		
+		//This is the output for HISTROGRAM BASED Model
 		System.out.print("\n **********B TYPE*****************  \n");
 		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
 		
@@ -46,8 +51,9 @@ public class naiveBayClassifier {
 				
 				total += Compute.B_Count.get(i)[j];
 				
-				Compute.totCountB[j]++;
+				Compute.totCountB[j] = total;
 			}
+			
 			
 			System.out.print("\n Total:  "+total);
 			
@@ -72,7 +78,7 @@ public class naiveBayClassifier {
 								 ":  COUNT = "+ Compute.M_Count.get(i)[j]);
 				
 				total += Compute.M_Count.get(i)[j];
-				Compute.totCountM[j]++;
+				Compute.totCountM[j] = total;
 			}
 			System.out.print("\n Total:  "+total);
 			
@@ -86,6 +92,8 @@ public class naiveBayClassifier {
 		
 		total = 0;
 		
+		
+		//Below is output for Equal Width Model
 		System.out.print("\n **********Equal Width B*****************  \n");
 		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
 		
@@ -101,7 +109,7 @@ public class naiveBayClassifier {
 								 ":  COUNT = "+ equalWidth.B_Count.get(i)[j]);
 				
 				total += equalWidth.B_Count.get(i)[j];
-				equalWidth.totCountB[j]++;
+				equalWidth.totCountB[j] = total;
 				
 			}
 			
@@ -131,7 +139,7 @@ public class naiveBayClassifier {
 								 ":  COUNT = "+ equalWidth.M_Count.get(i)[j]);
 				
 				total += equalWidth.M_Count.get(i)[j];
-				equalWidth.totCountM[j]++;
+				equalWidth.totCountM[j] = total;
 			}
 			System.out.print("\n Total:  "+total);
 			//equalWidth.totCountM[i]=total;
@@ -144,6 +152,7 @@ public class naiveBayClassifier {
 		
 		total = 0;
 		
+		//Below is output for Gaussian Base Model
 		System.out.print("\n **********Gaussian B*****************  \n");
 		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
 		
@@ -203,7 +212,7 @@ public class naiveBayClassifier {
 				
 				total += (int) Math.round( 100.00 * gaussianDistrBtn.B_Count.get(i)[j]/100.00);
 				if(j < gaussianDistrBtn.totCountB.length)
-					gaussianDistrBtn.totCountB[j]++;
+					gaussianDistrBtn.totCountB[j] = total;
 				
 			}
 			
@@ -276,13 +285,15 @@ public class naiveBayClassifier {
 				
 				total += (int) Math.round( 100.00 *gaussianDistrBtn.M_Count.get(i)[j]/100.00);
 				if(j < gaussianDistrBtn.totCountM.length)
-					gaussianDistrBtn.totCountM[j]++;
+					gaussianDistrBtn.totCountM[j] = total;
 			}
 			System.out.print("\n Total:  "+total);
 			//equalWidth.totCountM[i]=total;
 			total = 0;
 			
 		}
+		
+		//Call the test driver
 		
 		for(int i = 0; i < 2; i++){
 			testDriver.classifier(patients.dataValueList.get(i).values);

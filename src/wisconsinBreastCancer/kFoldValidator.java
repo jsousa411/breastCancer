@@ -8,14 +8,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class kFoldValidator {
 	
 	static int kFactor = 56;
 	static int total = 0;
-	static DecimalFormat df = new DecimalFormat("####0.000");
+	static DecimalFormat df = new DecimalFormat("####0.0000");
 	static breastCancer patients;// = new breastCancer(breastCancer.PATH);
+	static Double[][] resultsAll = new Double[6][10];	
+	static Double[] overAll	= new Double[6];
 	
 	
 	static void driver(){
@@ -28,87 +32,404 @@ public class kFoldValidator {
 	
 	static Double classifier(Double[] attributes){
 		
+		DecimalFormat df = new DecimalFormat("0.###E0");
+		//df.format()
+		
+		Double total = (double) patients.totalB;//Compute.totCountB[i];
 		Double outcomeB = 0.0;
 		Double outcomeM = 0.0;
+		Double gOutcomeB = 0.0,
+			   gOutComeM = 0.0,
+			   equalOutComeB = 0.0,
+			   equalOutComeM = 0.0,
+			   localOutcomeB = 0.0,
+			   localOutcomeM = 0.0;
+		
 		int counter1 = Compute.B_Count.size();
 		int countConst;
+		int indexB = 0;
+		int indexM = 0;
+		int gIndexB = 0,
+		    gIndexM = 0,
+		    equalIndexB = 0,
+		    equalIndexM = 0;
+		
+		Double value;
+		
+		System.out.print("\n\n\n"+
+		"/*****HISTROGRAM BASED Distribution KFold Validator*****/");
 		
 		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
 			
 			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
 			
-			countConst = Compute.B_Count_CONST.get(i).length;
+			//countConst = Compute.B_Count_CONST.get(i).length;
 			
-				for(int j = 0; j < countConst; j++){
+			value = attributes[i+1];
+			Double[] B = Compute.B_Count_CONST.get(i),
+					 M = Compute.M_Count_CONST.get(i);
+			
+			indexB = searchValue(B,value);
+			 System.out.print("\nB Found "+value+" at index: "+indexB+"\n");
+			
+			indexM = searchValue(M,value);
+			 System.out.print("\nM Found "+value+" at index: "+indexM+"\n");
+			/*gIndexB = searchValue(gaussianDistrBtn.B_Count_CONST.get(i),value);
+		    gIndexM = searchValue(gaussianDistrBtn.M_Count_CONST.get(i),value);
+		    equalIndexB = searchValue(equalWidth.B_Count_CONST.get(i),value);
+		    equalIndexM = searchValue(equalWidth.M_Count_CONST.get(i),value);*/
+			
+			if(i == 0){
+
+				//Double total = (double) patients.totalB;//Compute.totCountB[i];
+				Double subCount = Compute.B_Count.get(i)[indexB];
+				Double subCountM = Compute.M_Count.get(i)[indexM];
 				
-				  if(j>0){
-					if(attributes[i+1] > Compute.B_Count_CONST.get(i)[j-1] && attributes[i+1] <= Compute.B_Count_CONST.get(i)[j]){
-						
-						if(j>0)
-						System.out.print("\nRange:  "+df.format(Compute.B_Count_CONST.get(i)[j]- Compute.B_Count_CONST.get(i)[j-1])+ " for "+
-										Compute.B_Count_CONST.get(i)[j-1] + " to "+ Compute.B_Count_CONST.get(i)[j]+
-										":  COUNT = "+ Compute.B_Count.get(i)[j]);
-						
-						System.out.print("\n\nYou inputted:  "+attributes[i+1]);
-						System.out.print("\n\n**B** Probability is:  "+ Compute.B_Count.get(i)[j]+" / "+ Compute.totCountB[j] +" = "+ Compute.B_Count.get(i)[j]/Compute.totCountB[j]);
-						
-						outcomeB += Compute.B_Count.get(i)[j]/Compute.totCountB[j];
-						
-					}else if( j == Compute.B_Count_CONST.get(i).length -1){
-						
-						System.out.print("\nRange:  "+df.format(Compute.B_Count_CONST.get(i)[j]- Compute.B_Count_CONST.get(i)[j-1])+ " for "+
-						Compute.B_Count_CONST.get(i)[j-1] + " to "+ Compute.B_Count_CONST.get(i)[j]+
-								 ":  COUNT = "+ Compute.B_Count.get(i)[j]);
-						
-						System.out.print("\n\nYou inputted:  "+attributes[i+1]);
-						System.out.print("\n\n**B** Probability is:  "+ Compute.B_Count.get(i)[j]+" / "+ Compute.totCountB[j] +" = "+ Compute.B_Count.get(i)[j]/Compute.totCountB[j]);
-						
-						outcomeB += Compute.B_Count.get(i)[j]/Compute.totCountB[j];
-						
-					}
-				  }else{
-					  
-					  if(attributes[i+1] > Compute.B_Count_CONST.get(i)[j] && attributes[i+1] <= Compute.B_Count_CONST.get(i)[j+1]){
-							
-							 
-							System.out.print("\nRange:  "+df.format(Compute.B_Count_CONST.get(i)[j+1]- Compute.B_Count_CONST.get(i)[j])+ " for "+
-											Compute.B_Count_CONST.get(i)[j] + " to "+ Compute.B_Count_CONST.get(i)[j+1]+
-											":  COUNT = "+ Compute.B_Count.get(i)[j]);
-							
-							System.out.print("\n\nYou inputted:  "+attributes[i+1]);
-							System.out.print("\n\n**B** Probability is:  "+ Compute.B_Count.get(i)[j]+" / "+ Compute.totCountB[j] +" = "+ 
-							Compute.B_Count.get(i)[j]/Compute.totCountB[j]);
-							
-							outcomeB += Compute.B_Count.get(i)[j]/Compute.totCountB[j];
-				  }
+				if(subCount == 0.0 ){
 					
-					  
+					subCount = 1.0;
 				}
 				
-				for(j = 0; j < Compute.M_Count_CONST.get(i).length -1; j++){
+				if(subCountM == 0.0){
 					
-					if(attributes[j+1] > Compute.M_Count_CONST.get(i)[j] && attributes[j+1] <= Compute.M_Count_CONST.get(i)[j+1]){
+					subCountM = 1.0;
+				}
+				//histogram based distribution outcome
+				localOutcomeB = outcomeB = subCount/total;
+				localOutcomeM = outcomeM = subCountM/patients.totalM;
+		/*		
+				//Gaussian distribution outcome
+				gOutcomeB = gaussianDistrBtn.B_Count.get(i)[gIndexB]/total;
+			    gOutComeM = Compute.M_Count.get(i)[gIndexM]/patients.totalM;
+			    
+			    //equal width distribution outcome
+			    equalOutComeB = Compute.M_Count.get(i)[equalIndexB]/total;
+			    equalOutComeM = Compute.M_Count.get(i)[equalIndexM]/patients.totalM;*/
+				
+			}else{
+				
+				Double subCount = Compute.B_Count.get(i)[indexB];
+				Double subCountM = Compute.M_Count.get(i)[indexM];
+				
+				if(subCount == 0.0 ){
+					
+					subCount = 1.0;
+				}
+				
+				if(subCountM == 0.0){
+					
+					subCountM = 1.0;
+				}
+				
+				//histogram based distribution outcome
+				outcomeB *= localOutcomeB = subCount/patients.totalB;
+				outcomeM *= localOutcomeM = subCountM/patients.totalM;
+				
+				/*//Gaussian distribution outcome
+				gOutcomeB *= gaussianDistrBtn.B_Count.get(i)[gIndexB]/total;
+			    gOutComeM *= Compute.M_Count.get(i)[gIndexM]/patients.totalM;
+			    
+			    //equal width distribution outcome
+			    equalOutComeB *= Compute.M_Count.get(i)[equalIndexB]/total;
+			    equalOutComeM *= Compute.M_Count.get(i)[equalIndexM]/patients.totalM;*/
+			}
+			
+			resultsAll[0][i] = localOutcomeB;
+			resultsAll[1][i] = localOutcomeM;
+			
+			if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
+				System.out.print("\n\nThe outcome for B is:  "+df.format(localOutcomeB));
+				System.out.print("\n\nThe outcome for M is:  "+df.format(localOutcomeM));
+			}else{
+				
+				System.out.print("\n\nThe outcome for B is:  "+ localOutcomeB);
+				System.out.print("\n\nThe outcome for M is:  "+ localOutcomeM);
+			}
+			
+			/*System.out.print("\n\nThe Gaussian outcome for B is:  "+df.format(gOutcomeB));
+			System.out.print("\n\nThe Gaussian outcome for M is:  "+df.format(gOutComeM));
+			
+			System.out.print("\n\nThe Equal Width outcome for B is:  "+df.format(equalOutComeB));
+			System.out.print("\n\nThe Equal Width outcome for M is:  "+df.format(equalOutComeM));*/
+			
+			System.out.print("\n\n");
+			
+		}
+		
+		overAll[0] = outcomeB;
+		overAll[1] = outcomeM;
+		
+		System.out.print("\n the overall outcome for B is:  " + outcomeB + " and for M is:  "+ outcomeM);//localOutcomeB
+		System.out.print("\n\n\n"+
+		"/*****Gaussian Distribution KFold Validator*****/");
+		
+		counter1 = gaussianDistrBtn.B_Count_CONST.size();
+				
+				
+		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
+			
+			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
+			
+			//countConst = Compute.B_Count_CONST.get(i).length;
+			
+			value = attributes[i+1];
+			 
+			gIndexB = searchValue(gaussianDistrBtn.B_Count_CONST.get(i),value);
+			 System.out.print("\nB Found "+value+" at index: "+gIndexB+"\n");
+			 
+			
+		    gIndexM = searchValue(gaussianDistrBtn.M_Count_CONST.get(i),value);
+		    System.out.print("\nM Found "+value+" at index: "+gIndexM+"\n");
+
+			if(i == 0){
+
+				Double subCount =  gaussianDistrBtn.B_Count.get(i)[gIndexB];
+				Double subCountM = gaussianDistrBtn.M_Count.get(i)[gIndexM];
+				
+				if(subCount == 0.0 ){
+					
+					subCount = 1.0;
+				}
+				
+				if(subCountM == 0.0){
+					
+					subCountM = 1.0;
+				}
+				
+				//Double total = (double) patients.totalB;//Compute.totCountB[i];
+				 
+				//Gaussian distribution outcome
+				localOutcomeB = gOutcomeB = subCount/total;
+				localOutcomeM = gOutComeM = subCountM/patients.totalM;
+			    
+			    
+				
+			}else{
+				 
+				Double subCount =  gaussianDistrBtn.B_Count.get(i)[gIndexB];
+				Double subCountM = gaussianDistrBtn.M_Count.get(i)[gIndexM];
+				
+				if(subCount == 0.0 ){
+					
+					subCount = 1.0;
+				}
+				
+				if(subCountM == 0.0){
+					
+					subCountM = 1.0;
+				}
+				
+				//Gaussian distribution outcome
+				gOutcomeB *= localOutcomeB =subCount/total;
+			    gOutComeM *= localOutcomeM = subCountM/patients.totalM; 
+			}
+			
+			resultsAll[2][i] = localOutcomeB;
+			resultsAll[3][i] = localOutcomeM;
+			if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
+				System.out.print("\n\nThe Gaussian outcome for B is:  "+df.format(localOutcomeB));
+				System.out.print("\n\nThe Gaussian outcome for M is:  "+df.format(localOutcomeM)); 
+			}else{
+				System.out.print("\n\nThe Gaussian outcome for B is:  "+localOutcomeB);
+				System.out.print("\n\nThe Gaussian outcome for M is:  "+localOutcomeM); 
+			}
+			System.out.print("\n\n");
+			
+		}
+		
+		overAll[2] = outcomeB;
+		overAll[3] = outcomeM;
+		
+		System.out.print("\n the overall outcome for B is:  " + gOutcomeB + " and for M is:  "+ gOutComeM);//localOutcomeB
+		
+		System.out.print("\n\n\n"+
+		"/*****EQUAL WIDTH Distribution KFold Validator*****/");
+		
+		counter1 = equalWidth.B_Count_CONST.size();
+		
+		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
+			
+			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
+			
+			//countConst = Compute.B_Count_CONST.get(i).length;
+			
+			value = attributes[i+1];
+			 
+		    equalIndexB = searchValue(equalWidth.B_Count_CONST.get(i),value);
+		    System.out.print("\nB Found "+value+" at index: "+equalIndexB+"\n");
+		    
+		    equalIndexM = searchValue(equalWidth.M_Count_CONST.get(i),value); 
+		    System.out.print("\nM Found "+value+" at index: "+equalIndexM+"\n");
+		    
+			if(i == 0){
+
+				Double subCount =  equalWidth.B_Count.get(i)[equalIndexB];
+				Double subCountM = equalWidth.M_Count.get(i)[equalIndexM];
+				
+				if(subCount == 0.0 ){
+					
+					subCount = 1.0;
+				}
+				
+				if(subCountM == 0.0){
+					
+					subCountM = 1.0;
+				}
+				
+				//Double total = (double) patients.totalB;//Compute.totCountB[i];
+				 
+			    //equal width distribution outcome
+				localOutcomeB = equalOutComeB = subCount/total;
+				localOutcomeM = equalOutComeM = subCountM/patients.totalM; 
+				
+			}else{
+				//histogram based distribution outcome
+				Double subCount =  equalWidth.B_Count.get(i)[equalIndexB];
+				Double subCountM = equalWidth.M_Count.get(i)[equalIndexM];
+				
+				if(subCount == 0.0 ){
+					
+					subCount = 1.0;
+				}
+				
+				if(subCountM == 0.0){
+					
+					subCountM = 1.0;
+				}
+			    
+			    //equal width distribution outcome
+			    equalOutComeB *= localOutcomeB = subCount/total;
+			    equalOutComeM *= localOutcomeM = subCountM/patients.totalM; 
+			}
+			
+			resultsAll[4][i] = localOutcomeB;
+			resultsAll[5][i] = localOutcomeM;
+			
+			if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
+				System.out.print("\n\nThe Equal Width outcome for B is:  "+df.format(localOutcomeB));
+				System.out.print("\n\nThe Equal Width outcome for M is:  "+df.format(localOutcomeM));
+			}else{
+				
+				System.out.print("\n\nThe Equal Width outcome for B is:  "+ localOutcomeB);
+				System.out.print("\n\nThe Equal Width outcome for M is:  "+ localOutcomeM);
+				
+			}
+			
+			System.out.print("\n\n");
+			
+		}
+				
+		overAll[4] = outcomeB;
+		overAll[5] = outcomeM;
+		
+		System.out.print("\n the overall outcome for B is:  " + df.format(equalOutComeB) + " and for M is:  "+df.format(equalOutComeM));//localOutcomeB
+		/***************************RETURN FINAL RESULT BASED ON HISTOGRA DISTRIBUTION*/
+
+		System.out.print("\n\n\n"+"                "+"Histogram Based Model"+"                "+"Gaussian Based Model"+"                "+"Equal Width Model");
+		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
+			System.out.print("\n\n\n"+Compute.attributes[i]+"\n");
+					for(int j = 0; j < 1; j++){
+						System.out.print("B:                "+df.format(resultsAll[j][i])
+										  +"                                "+df.format(resultsAll[j+2][i])
+										  +"                                "+df.format(resultsAll[j+4][i]));
 						
-						System.out.print("\nRange:  "+df.format(Compute.M_Count_CONST.get(i)[j+1]- Compute.M_Count_CONST.get(i)[j])+ 
-										" for "+ Compute.M_Count_CONST.get(i)[j] + " to "+ Compute.M_Count_CONST.get(i)[j+1]+
-										":  COUNT = "+ Compute.M_Count.get(i)[j]);
-						
-						System.out.print("\n\nYou inputted:  "+attributes[j+1]);
-						System.out.print("\n\n&&M&& Probability is:  "+ Compute.M_Count.get(i)[j]+" / "+ breastCancer.totalM+" = "+
-						Compute.M_Count.get(i)[j]/Compute.totCountM[j]);
-						
-						outcomeM += Compute.M_Count.get(i)[j]/Compute.totCountM[j];
+						System.out.print("\nM:                "+df.format(resultsAll[j+1][i])
+											+"                                "+df.format(resultsAll[j+3][i])
+											+"                                "+df.format(resultsAll[j+5][i]));
 					}
 					
-					  
+					
+		}
+		System.out.print("\n\n*********************************************************************************************************"+
+						 "\n\nOnverall:  \nB:");
+		for(int i = 0; i < 6; i+=2){
+			System.out.print("                "+df.format(overAll[i])+"                ");
+		}
+		System.out.print("\nM:");
+		for(int i = 1; i < 6; i+=2){
+			System.out.print("                "+df.format(overAll[i])+"                ");
+		}
+		
+		if(outcomeB > outcomeM){
+			
+			/*System.out.print("\n\nThe FINAL outcome for B is:  "+df.format(outcomeB));
+			System.out.print("\n\nLOSER M is:  "+df.format(outcomeM));
+			System.out.print("\n\n");*/
+			
+			return 0.0;
+			
+		}else{
+			
+			/*System.out.print("\n\nLOSER B is:  "+df.format(outcomeB));			 
+			System.out.print("\n\nThe FINAL outcome for M is:  "+df.format(outcomeM));
+			System.out.print("\n\n");*/
+			
+			return 1.0;
+			
+		}
+	}
+	
+	
+	
+	//Displays an array to the console
+	static public void displayArray(Double[] array){
+		int i =0;
+		
+		System.out.print("\n[ ");
+		for(i = 0; i < array.length-1; i++){
+			
+			System.out.print(array[i]+ ",");
+		}
+		
+		System.out.print(array[i]+ " ]\n");
+	}
+	
+	//Searches for a value within the array and returns the index of that array
+	static public int searchValue(Double[] dataArray, Double searchVal){
+		
+		int i = 0;
+		
+		System.out.print("\n\nSearching for:  "+searchVal+" in array:  ");
+		displayArray(dataArray);
+		
+		
+		
+		//if the value is way small or
+		//less than the first potential range
+		//value, we might have an outlier: return the
+		//first index i.e. 0
+		if(dataArray[i] >= searchVal){
+			
+			
+			return i;
+			
+		}else{
+			
+			//look through array for 
+			//potential range of value
+			while(i < dataArray.length){
+				
+				//if value is smaller than current
+				//range keep searching
+				if(dataArray[i] < searchVal){
+					
+					i++;
+					
+				}else{
+					
+					//if value is smaller or 
+					//equal searched value
+					//return index
+					if(dataArray[i] >= searchVal){
+						
+						return i;
+						
+					}
 				}
 			}
 		}
-			
-		if(outcomeM > outcomeB)
-			return 1.0;
-		else
-			return 0.0;
+		
+		return i-1;//if we did not find the value then go with outlier 
 	}
 	
 	//Read data from file at location: PATH

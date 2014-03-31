@@ -15,7 +15,7 @@ public class Compute {
 	 static List<Double[]> M_Count_CONST = new ArrayList<Double[]>();
 	 static List<Double[]> B_Count_CONST = new ArrayList<Double[]>();
 	 
-	 static String[] attributes = { "MeanRadius",  
+	 static String[] attributes = {  "MeanRadius",  
 									 "texture",  
 									 "perimeter",  
 									 "area",  
