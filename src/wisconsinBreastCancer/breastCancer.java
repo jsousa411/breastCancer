@@ -58,8 +58,8 @@ public class breastCancer {
 		probabilityM = new Double[10];
 		probabilityB = new Double[10];	
 		
-		totalM = 0;
-		totalB = 0;
+		totalM = 0;//total M data counter
+		totalB = 0;//total B data counter
 			
 		 //list with all the data read from file
 		dataValueList = new ArrayList<breastCancer>();
@@ -175,14 +175,19 @@ public class breastCancer {
 							   
 							   int j = 0;
 							   
+							   if(tempArrayValue < equalWidth.M_Count_CONST.get(i)[j]){
+								   
+								   equalWidth.M_Count.get(i)[j] += 1.0;
+							   }else{
 							   //for(int j = 0; j < subArrSize; j++){									   
-								while( tempArrayValue < equalWidth.M_Count_CONST.get(i)[j]){  
+								while( tempArrayValue > equalWidth.M_Count_CONST.get(i)[j]
+										&& j < equalWidth.M_Count_CONST.get(i).length){  
 								   
 								   j++;
 								   
-								}
+								}//if we break out of the loop it means we are done searching
 								equalWidth.M_Count.get(i)[j] += 1.0;
-								   
+							   }
 							   
 							   
 						}
@@ -209,6 +214,10 @@ public class breastCancer {
 								  if((j+1) < equalWidth.B_Count_CONST.get(i).length){
 									  
 									  Double[] arr1 = equalWidth.B_Count_CONST.get(i);
+									  
+									  //range boundaries to find out 
+									  //where exactly each attribute
+									  //frequency is located
 									  Double v1 = arr1[j],
 											 v2 = arr1[j+1];
 									  
@@ -250,7 +259,7 @@ public class breastCancer {
 	}//end equal Width
 	
 /************************************************************************/	
-	//4.iii(2) frequency count
+	//4.iii(2) Gaussian Model frequency count
 		//after reading all the data we know the total count for M and B
 		//now we distribute the data according to a normal distribution
 		//and then set the boundaries
@@ -397,14 +406,15 @@ public class breastCancer {
 							if(probabilityM[0] == null){
 								
 								for(int i = 0; i < probabilityM.length; i++){
-									probabilityM[i] = 0.0;
+									probabilityM[i] = 0.0; 
 								}
 								
 							}
-							//positive
+							//positive: M
 							values[0] = 1.0;
 							
-							//probabilityM[0]++;
+							//count data frequency
+							probabilityM[0]++;
 							 
 							
 						}else{
@@ -417,9 +427,9 @@ public class breastCancer {
 								
 							}
 							
-							//negative i.e. benign
+							//negative i.e. B
 							values[0] = 0.0;							
-							probabilityB[0]++;
+							probabilityB[0]++;//count data frequency
 							
 							
 						}
@@ -433,60 +443,76 @@ public class breastCancer {
 							for(int i = 0; i < arraySize; i++){
 								
 								
-								tempArrayValue = Double.valueOf(valuesIn[i+2]);
-							if((i+2) == 2){
-							    for(int y = 0; y < dataInput[1].length ; y++){
-							    	dataInput[1][y][dataM1_Counter] = Double.valueOf(valuesIn[y+2]);
-							    }
-								dataM1_Counter++;
-							}
-							
-							
-								values[i+1] = tempArrayValue;
-								probabilityM[i] = tempArrayValue;			
-								
-								//this is to get the (max - min)/range = equal width
-								//for 4.iii(1)
-								if(equalWidth.max[i] < tempArrayValue){
+										tempArrayValue = Double.valueOf(valuesIn[i+2]);
+										
+										if((i+2) == 2){
+											//copy the value for attribute at location 2
+											//and keep track of how many occurences we have
+										    for(int y = 0; y < dataInput[1].length ; y++){
+										    	dataInput[1][y][dataM1_Counter] = Double.valueOf(valuesIn[y+2]);
+										    }
+											dataM1_Counter++;
+										}
 									
-									equalWidth.max[i] = tempArrayValue;
-								}
-								
-								if(equalWidth.min[i]  > tempArrayValue ){
 									
-									equalWidth.min[i] = tempArrayValue;
-									
-								}
-								
-								 //Below is a more simple code of what the following
-								   //loop does
-								   /*if(tempArrayValue > 7.65 && tempArrayValue< 8.4){
-									
-									  //i traverses: Mean Radius	texture	perimeter	area	smoothness	compactness	concavity	concave	symmetry	fractal dimension
-									   dataStats.B_Count.get(i)[0]++;
-									   
-								   }else if(tempArrayValue > 7.65 && tempArrayValue < 8.4){
-									   
-									   dataStats.B_Count.get(i)[1]++;
-									   
-								   }*/
-								   
-								   int subArrSize = Compute.M_Count.get(i).length;
-								   
-								   for(int j = 0; j < subArrSize-1; j++){									   
-									  
-									   //check which width the current tempArrayValue falls within
-									   if((j+1) < Compute.B_Count_CONST.get(i).length){
-										   if( tempArrayValue >= Compute.M_Count_CONST.get(i)[j] && 
-												   tempArrayValue < Compute.M_Count_CONST.get(i)[j+1] ){
-											    
-											   //at this range...for M result type
-											   Compute.M_Count.get(i)[j] += 1.0;//increment the frequence for this result
-											   break;
+										values[i+1] = tempArrayValue;
+										probabilityM[i] = tempArrayValue;			
+										
+										//this is to get the (max - min)/range = equal width
+										//for 4.iii(1)
+										if(equalWidth.max[i] < tempArrayValue){
+											
+											equalWidth.max[i] = tempArrayValue;
+										}
+										
+										if(equalWidth.min[i]  > tempArrayValue ){
+											
+											equalWidth.min[i] = tempArrayValue;
+											
+										}
+										
+										 //Below is a more simple code of what the following
+										   //loop does
+										   /*if(tempArrayValue > 7.65 && tempArrayValue< 8.4){
+											
+											  //i traverses: Mean Radius	texture	perimeter	area	
+											   * smoothness	compactness	concavity	concave	symmetry	fractal dimension
+											   dataStats.B_Count.get(i)[0]++;
 											   
-										   }					   
-									   }
-								   }
+										   }else if(tempArrayValue > 7.65 && tempArrayValue < 8.4){
+											   
+											   dataStats.B_Count.get(i)[1]++;
+											   
+										   }*/
+										   
+										   int subArrSize = Compute.M_Count.get(i).length;
+										   
+										 
+										   
+										   
+										   for(int j = 0; j < subArrSize-1; j++){									   
+											  
+											   if(tempArrayValue < Compute.M_Count_CONST.get(i)[j]){
+												   
+												   Compute.M_Count.get(i)[j] += 1.0;//increment the frequence for this result
+												   break;
+												   
+											   }
+											   
+										   }
+											   
+											   //check which width the current tempArrayValue falls within
+											   /*if((j+1) < Compute.B_Count_CONST.get(i).length){
+												   if( tempArrayValue >= Compute.M_Count_CONST.get(i)[j] && 
+														   tempArrayValue < Compute.M_Count_CONST.get(i)[j+1] ){
+													    
+													   //at this range...for M result type
+													   Compute.M_Count.get(i)[j] += 1.0;//increment the frequence for this result
+													   break;
+													   
+												   }					   
+											   }
+										   }*/
 								   
 							}
 						}else{//negative test result i.e. B
@@ -539,8 +565,14 @@ public class breastCancer {
 									 
 								   for(int j = 0; j < subArrSize; j++){
 									   
+									   if(tempArrayValue < Compute.B_Count_CONST.get(i)[j] ){
+										   
+										   Compute.B_Count.get(i)[j] += 1.0;//increment the frequency for this result
+										   break;
+									   }
+									   
 									 //check which width the current tempArrayValue falls within
-									  if((j+1) < Compute.B_Count_CONST.get(i).length){
+									 /* if((j+1) < Compute.B_Count_CONST.get(i).length){
 										   if( tempArrayValue >= Compute.B_Count_CONST.get(i)[j] && 
 												   tempArrayValue < Compute.B_Count_CONST.get(i)[j+1] ){
 											   
@@ -551,7 +583,7 @@ public class breastCancer {
 											   break;
 											   
 										   }
-									  }							   
+									  }*/							   
 									   
 								   }
 								   

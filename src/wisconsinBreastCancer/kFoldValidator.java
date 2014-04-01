@@ -254,7 +254,11 @@ public class kFoldValidator {
 		    
 			if(i == 0){
 
+				Double[] temprr = equalWidth.B_Count.get(i);
 				Double subCount =  equalWidth.B_Count.get(i)[equalIndexB];
+				
+				temprr = equalWidth.M_Count.get(i);
+				
 				Double subCountM = equalWidth.M_Count.get(i)[equalIndexM];
 				
 				if(subCount == 0.0 ){
