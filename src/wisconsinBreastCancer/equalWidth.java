@@ -6,7 +6,7 @@ import java.util.List;
 public class equalWidth {
 
 	 // the graphs had a even width distribution between 14 to 18
-	 static int WIDTH = 16;//based on observation of graphs set to 16
+	 static int WIDTH = 6;//based on observation of graphs set to 16
 	 
 	 static Double[] dataSample;
 	 static List<Double[]> M_Count = new ArrayList<Double[]>();

@@ -132,6 +132,13 @@ public class naiveBayClassifier {
 				
 				
 				}
+				
+				if(j == 567){
+					
+					@SuppressWarnings("unused")
+					int ju = 0;
+					ju++;
+				}
 			}//end test driver loop
 			
 			for(int q = 0; q < 3; q++){

@@ -160,35 +160,37 @@ public class breastCancer {
 		 
 					//positive test result i.e. M
 					if(valuesIn[0] == 1.0){
-						 
+						//totalM++;
 						int arraySize =valuesIn.length-1;// equalWidth.M_Count.size();
 						//keep the -1 to prevent array out of bounds at
 						//line : tempArrayValue = Double.valueOf(valuesIn[i+2]);
 						for(int i = 0; i < arraySize; i++){		
 							   
+							
+							// get the attribute data
 							   tempArrayValue = Double.valueOf(valuesIn[i+1]);
 							   
+							   //get the length of the frequency array
 							   int subArrSize = equalWidth.M_Count.get(i).length;
 							   
-							   for(int j = 0; j < subArrSize-1; j++){									   
-								  
-								   if((j+1) < equalWidth.M_Count_CONST.get(i).length){
-									   
-									   if( tempArrayValue >= equalWidth.M_Count_CONST.get(i)[j] && 
-											   tempArrayValue < equalWidth.M_Count_CONST.get(i)[j+1] ){
-										   
-										   
-										   //at this range...for M result type
-										   equalWidth.M_Count.get(i)[j] += 1.0;//increment the frequency for this result
-										   break;
-										   
-									   }
-								   }
-							   }
+							   int j = 0;
+							   
+							   //for(int j = 0; j < subArrSize; j++){									   
+								while( tempArrayValue < equalWidth.M_Count_CONST.get(i)[j]){  
+								   
+								   j++;
+								   
+								}
+								equalWidth.M_Count.get(i)[j] += 1.0;
+								   
+							   
 							   
 						}
+						
+
 					}else{//negative test result i.e. B
 
+						
 						
 						int arraySize = valuesIn.length-1;// equalWidth.B_Count.size();
 						//keep the -1 to prevent array out of bounds at
@@ -198,21 +200,22 @@ public class breastCancer {
 							 tempArrayValue = Double.valueOf(valuesIn[i+1]);
 							 int subArrSize = equalWidth.B_Count.get(i).length;
 							 
-							 
+							  //loop through frequency counter
 							   for(int j = 0; j < subArrSize; j++){
 								   
 										
-										 
+										 //check the ranges so we can 
+								   		//count the frequency
 								  if((j+1) < equalWidth.B_Count_CONST.get(i).length){
+									  
 									  Double[] arr1 = equalWidth.B_Count_CONST.get(i);
 									  Double v1 = arr1[j],
 											 v2 = arr1[j+1];
+									  
 									   if( tempArrayValue >= v1 && 
 											   tempArrayValue < v2 ){
 										   
-										 //  System.out.print("\n\naccessing B_COUNT_CONST at i: "+i +" and j : "+ j);
-										 
-										   totalB++;
+										  
 										   //at this range...for M result type
 										   equalWidth.B_Count.get(i)[j] += 1.0;//increment the frequency for this result
 										   break;
@@ -220,7 +223,7 @@ public class breastCancer {
 									   }else if( (tempArrayValue < v1)//this is for data below the range 
 											     && j == 0){
 										   
-										   totalB++;
+										 //  totalB++;
 										   equalWidth.B_Count.get(i)[j] += 1.0;
 										   break;
 									   }else{}
@@ -254,19 +257,24 @@ public class breastCancer {
 				
 		public void populateGaussianDist(){
 			
+			//Gaussian distribution array
 			Double[] gaussianDistribution = {0.001, 0.022, 0.136, 0.341,  0.341, 0.136, 0.022, 0.001};
 			
 			 
 			int kLen = 0;
 			
 			 
-			for(int i = 0; i < dataInput.length -1 ; i++){//10
+			for(int i = 0; i < dataInput.length -1 ; i++){//10 max loops
 				
 				 
 				
-				for(int y = 0; y < dataInput[i].length; y++){//400
+				for(int y = 0; y < dataInput[i].length; y++){//400 max loops
 				
 				 
+					//loop through whole array and whichever slots
+					//that do not have data set it to MAX value
+					//to prevent it from being mixed into the data
+					//during the sort
 										
 					for(int h = 0; h < dataInput[i][y].length; h++){//
 						
@@ -279,7 +287,10 @@ public class breastCancer {
 						 
 					}
 					
-					
+					//loop through whole array and whichever slots
+					//that do not have data set it to MAX value
+					//to prevent it from being mixed into the data
+					//during the sort
 					for(int h = 0; h < dataInput[i][y].length; h++){//
 						
 						if(dataInput[i+1][y][h] == null){
@@ -301,6 +312,8 @@ public class breastCancer {
 					Arrays.sort(tempDbl);
 
 					dataInput[i+1][y] = tempDbl.clone();
+					//finished sorting data
+					
 					
 										//the length is WIDTH, which = 8 for gaussianDistrBrn
 					for(int k = 0; k < gaussianDistrBtn.M_Count.get(i).length; k++){
@@ -419,7 +432,7 @@ public class breastCancer {
 							//line : tempArrayValue = Double.valueOf(valuesIn[i+2]);
 							for(int i = 0; i < arraySize; i++){
 								
-								totalM++;
+								
 								tempArrayValue = Double.valueOf(valuesIn[i+2]);
 							if((i+2) == 2){
 							    for(int y = 0; y < dataInput[1].length ; y++){
@@ -483,7 +496,7 @@ public class breastCancer {
 							//line : tempArrayValue = Double.valueOf(valuesIn[i+2]);
 							for(int i = 0; i < arraySize; i++){
 								   
-								    totalB++;
+								  /*rato  totalB++;*/
 								    
 									tempArrayValue = Double.valueOf(valuesIn[i+2]);
 									if((i+2) == 2){
@@ -592,6 +605,7 @@ public class breastCancer {
 						tmpLn = line.split(delimiter);//parse each column by a comma						
 						
 						
+						
 						//4.iii(3) frequency count:
 						//create a breast cancer object
 						//by assigning input values from the line just read
@@ -692,10 +706,11 @@ public class breastCancer {
 								if(  tmpLn[i+1].equals("M")){
 									
 									data[i] = 1.0;
-									
+									totalM++;
 								}else if (tmpLn[i+1].equals("B")){
 									
 									data[i] = 0.0;
+									totalB++;
 									
 								}else{
 									data[i] = Double.valueOf(tmpLn[i+1]);

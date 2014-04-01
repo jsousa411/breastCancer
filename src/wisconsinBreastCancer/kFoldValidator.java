@@ -22,7 +22,6 @@ public class kFoldValidator {
 	static Double[][] resultsAll = new Double[6][10];	
 	static Double[] overAll	= new Double[6];
 	
-	
 	//This is used to write data to a file 
 	//to control the 10-fold learning data	
 	static void driver(int kValue){
@@ -45,6 +44,9 @@ public class kFoldValidator {
 	//each attribute probability calculated is used for the
 	//overall classification
 	static Double[] classifier(Double[] attributes){
+		
+		Double probabilityB = 1.0;//(double) ((double)patients.totalB/(Double.valueOf((double)patients.totalM )+ (double)patients.totalB));
+		Double probabilityM = 1.0;//(double) ((double)patients.totalM/((double)patients.totalM + (double)patients.totalB));
 		
 		DecimalFormat df = new DecimalFormat("0.###E0");
 		//df.format()
@@ -144,8 +146,8 @@ public class kFoldValidator {
 			 
 		}//end Histogram observation model
 		
-		overAll[0] = outcomeB;
-		overAll[1] = outcomeM;
+		overAll[0] = outcomeB*probabilityB;
+		overAll[1] = outcomeM*probabilityM;
 		
 		/* "/*****Gaussian Distribution KFold Validator**** ");*/
 		
@@ -226,8 +228,8 @@ public class kFoldValidator {
 			
 		}
 		
-		overAll[2] = gOutcomeB;
-		overAll[3] = gOutComeM;
+		overAll[2] = gOutcomeB *probabilityB;
+		overAll[3] = gOutComeM * probabilityM;
 		
 		/*System.out.print("\n the overall outcome for B is:  " + gOutcomeB + " and for M is:  "+ gOutComeM);//localOutcomeB
 		
@@ -311,8 +313,8 @@ public class kFoldValidator {
 			
 		}
 				
-		overAll[4] = equalOutComeB;
-		overAll[5] = equalOutComeM;
+		overAll[4] = equalOutComeB *probabilityB;
+		overAll[5] = equalOutComeM * probabilityM;
 		
 		/*System.out.print("\n the overall outcome for B is:  " + df.format(equalOutComeB) + " and for M is:  "+df.format(equalOutComeM));//localOutcomeB
 		*//***************************RETURN FINAL RESULT BASED ON HISTOGRA DISTRIBUTION*//*
