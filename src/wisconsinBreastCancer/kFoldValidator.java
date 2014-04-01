@@ -14,6 +14,7 @@ import java.util.List;
 
 public class kFoldValidator {
 	
+	static String learnDataPath = "KfoldData/";
 	static int kFactor = 56;
 	static int total = 0;
 	static DecimalFormat df = new DecimalFormat("####0.0000");
@@ -22,27 +23,41 @@ public class kFoldValidator {
 	static Double[] overAll	= new Double[6];
 	
 	
-	static void driver(){
+	//This is used to write data to a file 
+	//to control the 10-fold learning data	
+	static void driver(int kValue){
 		
+		//this is the K number i.e. 1,2,3...10
+		kFactor = kValue;
 		
-		
-		writeData("KfoldData/");
+		//write data to file
+		writeData(learnDataPath);
 		 
 	}
 	
-	static Double classifier(Double[] attributes){
+	
+	//This method checks the location of the range
+	//where the value of each element in attributes[]
+	//fits within its attribute Distribution Model
+	//Then it takes the total count of elements from that
+	//Range within that Distribution model and calculates a 
+	//probability for that attribute
+	//each attribute probability calculated is used for the
+	//overall classification
+	static Double[] classifier(Double[] attributes){
 		
 		DecimalFormat df = new DecimalFormat("0.###E0");
 		//df.format()
 		
 		Double total = (double) patients.totalB;//Compute.totCountB[i];
-		Double outcomeB = 0.0;
+		Double outcomeB = 0.0;//outcome for the histogram based model
 		Double outcomeM = 0.0;
-		Double gOutcomeB = 0.0,
+		Double gOutcomeB = 0.0,//outcome for Gaussian model
 			   gOutComeM = 0.0,
-			   equalOutComeB = 0.0,
+			   equalOutComeB = 0.0,//outcome for equal width model
 			   equalOutComeM = 0.0,
-			   localOutcomeB = 0.0,
+			   localOutcomeB = 0.0,//outcome for each attribute as we loop...used
+			   					   //for debugging
 			   localOutcomeM = 0.0;
 		
 		int counter1 = Compute.B_Count.size();
@@ -56,130 +71,99 @@ public class kFoldValidator {
 		
 		Double value;
 		
-		System.out.print("\n\n\n"+
-		"/*****HISTROGRAM BASED Distribution KFold Validator*****/");
-		
-		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
-			
-			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
-			
-			//countConst = Compute.B_Count_CONST.get(i).length;
-			
+		/*System.out.print("\n\n\n"+
+		"/*****HISTROGRAM BASED Distribution KFold Validator****");*/
+	 	
+		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){ 
+		 
 			value = attributes[i+1];
 			Double[] B = Compute.B_Count_CONST.get(i),
 					 M = Compute.M_Count_CONST.get(i);
 			
-			indexB = searchValue(B,value);
-			 System.out.print("\nB Found "+value+" at index: "+indexB+"\n");
+			indexB = searchValue(B,value); 
 			
-			indexM = searchValue(M,value);
-			 System.out.print("\nM Found "+value+" at index: "+indexM+"\n");
-			/*gIndexB = searchValue(gaussianDistrBtn.B_Count_CONST.get(i),value);
-		    gIndexM = searchValue(gaussianDistrBtn.M_Count_CONST.get(i),value);
-		    equalIndexB = searchValue(equalWidth.B_Count_CONST.get(i),value);
-		    equalIndexM = searchValue(equalWidth.M_Count_CONST.get(i),value);*/
+			indexM = searchValue(M,value); 
 			
+			//for the first go round
 			if(i == 0){
 
-				//Double total = (double) patients.totalB;//Compute.totCountB[i];
+				//get the frequency for this occurrence
 				Double subCount = Compute.B_Count.get(i)[indexB];
 				Double subCountM = Compute.M_Count.get(i)[indexM];
 				
+				//this is to handle the 0 probability
 				if(subCount == 0.0 ){
 					
 					subCount = 1.0;
 				}
-				
+				//this is to handle the 0 probability
 				if(subCountM == 0.0){
 					
 					subCountM = 1.0;
 				}
 				//histogram based distribution outcome
-				localOutcomeB = outcomeB = subCount/total;
-				localOutcomeM = outcomeM = subCountM/patients.totalM;
-		/*		
-				//Gaussian distribution outcome
-				gOutcomeB = gaussianDistrBtn.B_Count.get(i)[gIndexB]/total;
-			    gOutComeM = Compute.M_Count.get(i)[gIndexM]/patients.totalM;
-			    
-			    //equal width distribution outcome
-			    equalOutComeB = Compute.M_Count.get(i)[equalIndexB]/total;
-			    equalOutComeM = Compute.M_Count.get(i)[equalIndexM]/patients.totalM;*/
+				localOutcomeB  = subCount/total;
 				
+				outcomeB = localOutcomeB;
+				
+				localOutcomeM  = subCountM/patients.totalM;
+				
+				outcomeM = localOutcomeM;
+		
+				//for the remaining of the loop
 			}else{
 				
+				//get frequency
 				Double subCount = Compute.B_Count.get(i)[indexB];
 				Double subCountM = Compute.M_Count.get(i)[indexM];
 				
+				//this is to handle the 0 probability
 				if(subCount == 0.0 ){
 					
 					subCount = 1.0;
 				}
-				
+				//this is to handle the 0 probability
 				if(subCountM == 0.0){
 					
 					subCountM = 1.0;
 				}
 				
 				//histogram based distribution outcome
-				outcomeB *= localOutcomeB = subCount/patients.totalB;
-				outcomeM *= localOutcomeM = subCountM/patients.totalM;
+				localOutcomeB = subCount/patients.totalB;
 				
-				/*//Gaussian distribution outcome
-				gOutcomeB *= gaussianDistrBtn.B_Count.get(i)[gIndexB]/total;
-			    gOutComeM *= Compute.M_Count.get(i)[gIndexM]/patients.totalM;
-			    
-			    //equal width distribution outcome
-			    equalOutComeB *= Compute.M_Count.get(i)[equalIndexB]/total;
-			    equalOutComeM *= Compute.M_Count.get(i)[equalIndexM]/patients.totalM;*/
+				//multiply the next attribute's probability
+				outcomeB *= localOutcomeB ;
+				
+				localOutcomeM = subCountM/patients.totalM;
+				
+				//multiply the next attribute's probability
+				outcomeM *= localOutcomeM;
+				 
 			}
 			
-			resultsAll[0][i] = localOutcomeB;
-			resultsAll[1][i] = localOutcomeM;
-			
-			if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
-				System.out.print("\n\nThe outcome for B is:  "+df.format(localOutcomeB));
-				System.out.print("\n\nThe outcome for M is:  "+df.format(localOutcomeM));
-			}else{
-				
-				System.out.print("\n\nThe outcome for B is:  "+ localOutcomeB);
-				System.out.print("\n\nThe outcome for M is:  "+ localOutcomeM);
-			}
-			
-			/*System.out.print("\n\nThe Gaussian outcome for B is:  "+df.format(gOutcomeB));
-			System.out.print("\n\nThe Gaussian outcome for M is:  "+df.format(gOutComeM));
-			
-			System.out.print("\n\nThe Equal Width outcome for B is:  "+df.format(equalOutComeB));
-			System.out.print("\n\nThe Equal Width outcome for M is:  "+df.format(equalOutComeM));*/
-			
-			System.out.print("\n\n");
-			
-		}
+			 
+		}//end Histogram observation model
 		
 		overAll[0] = outcomeB;
 		overAll[1] = outcomeM;
 		
-		System.out.print("\n the overall outcome for B is:  " + outcomeB + " and for M is:  "+ outcomeM);//localOutcomeB
-		System.out.print("\n\n\n"+
-		"/*****Gaussian Distribution KFold Validator*****/");
+		/* "/*****Gaussian Distribution KFold Validator**** ");*/
 		
 		counter1 = gaussianDistrBtn.B_Count_CONST.size();
 				
 				
 		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
 			
-			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
-			
-			//countConst = Compute.B_Count_CONST.get(i).length;
+			 
 			
 			value = attributes[i+1];
 			 
 			gIndexB = searchValue(gaussianDistrBtn.B_Count_CONST.get(i),value);
-			 System.out.print("\nB Found "+value+" at index: "+gIndexB+"\n");
+			// System.out.print("\nB Found "+value+" at index: "+gIndexB+"\n");
 			 
 			
 		    gIndexM = searchValue(gaussianDistrBtn.M_Count_CONST.get(i),value);
-		    System.out.print("\nM Found "+value+" at index: "+gIndexM+"\n");
+		   // System.out.print("\nM Found "+value+" at index: "+gIndexM+"\n");
 
 			if(i == 0){
 
@@ -220,46 +204,51 @@ public class kFoldValidator {
 				}
 				
 				//Gaussian distribution outcome
-				gOutcomeB *= localOutcomeB =subCount/total;
-			    gOutComeM *= localOutcomeM = subCountM/patients.totalM; 
+				localOutcomeB =subCount/total;
+				
+				gOutcomeB *= localOutcomeB;
+				
+			    localOutcomeM = subCountM/patients.totalM;
+			    
+			    gOutComeM *= localOutcomeM;
 			}
 			
 			resultsAll[2][i] = localOutcomeB;
 			resultsAll[3][i] = localOutcomeM;
-			if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
+			/*if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
 				System.out.print("\n\nThe Gaussian outcome for B is:  "+df.format(localOutcomeB));
 				System.out.print("\n\nThe Gaussian outcome for M is:  "+df.format(localOutcomeM)); 
 			}else{
 				System.out.print("\n\nThe Gaussian outcome for B is:  "+localOutcomeB);
 				System.out.print("\n\nThe Gaussian outcome for M is:  "+localOutcomeM); 
 			}
-			System.out.print("\n\n");
+			System.out.print("\n\n");*/
 			
 		}
 		
-		overAll[2] = outcomeB;
-		overAll[3] = outcomeM;
+		overAll[2] = gOutcomeB;
+		overAll[3] = gOutComeM;
 		
-		System.out.print("\n the overall outcome for B is:  " + gOutcomeB + " and for M is:  "+ gOutComeM);//localOutcomeB
+		/*System.out.print("\n the overall outcome for B is:  " + gOutcomeB + " and for M is:  "+ gOutComeM);//localOutcomeB
 		
 		System.out.print("\n\n\n"+
-		"/*****EQUAL WIDTH Distribution KFold Validator*****/");
+		"/*****EQUAL WIDTH Distribution KFold Validator**** ");*/
 		
 		counter1 = equalWidth.B_Count_CONST.size();
 		
 		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
 			
-			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
+			//System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
 			
 			//countConst = Compute.B_Count_CONST.get(i).length;
 			
 			value = attributes[i+1];
 			 
 		    equalIndexB = searchValue(equalWidth.B_Count_CONST.get(i),value);
-		    System.out.print("\nB Found "+value+" at index: "+equalIndexB+"\n");
+		   // System.out.print("\nB Found "+value+" at index: "+equalIndexB+"\n");
 		    
 		    equalIndexM = searchValue(equalWidth.M_Count_CONST.get(i),value); 
-		    System.out.print("\nM Found "+value+" at index: "+equalIndexM+"\n");
+		  //  System.out.print("\nM Found "+value+" at index: "+equalIndexM+"\n");
 		    
 			if(i == 0){
 
@@ -298,14 +287,17 @@ public class kFoldValidator {
 				}
 			    
 			    //equal width distribution outcome
-			    equalOutComeB *= localOutcomeB = subCount/total;
-			    equalOutComeM *= localOutcomeM = subCountM/patients.totalM; 
+			    localOutcomeB = subCount/total;
+			    equalOutComeB *=  localOutcomeB;
+			    
+			    localOutcomeM = subCountM/patients.totalM; 
+			    equalOutComeM *= localOutcomeM ;
 			}
 			
 			resultsAll[4][i] = localOutcomeB;
 			resultsAll[5][i] = localOutcomeM;
 			
-			if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
+			/*if(localOutcomeB > 0.00001 && localOutcomeM > 0.00001){
 				System.out.print("\n\nThe Equal Width outcome for B is:  "+df.format(localOutcomeB));
 				System.out.print("\n\nThe Equal Width outcome for M is:  "+df.format(localOutcomeM));
 			}else{
@@ -315,15 +307,15 @@ public class kFoldValidator {
 				
 			}
 			
-			System.out.print("\n\n");
+			System.out.print("\n\n");*/
 			
 		}
 				
-		overAll[4] = outcomeB;
-		overAll[5] = outcomeM;
+		overAll[4] = equalOutComeB;
+		overAll[5] = equalOutComeM;
 		
-		System.out.print("\n the overall outcome for B is:  " + df.format(equalOutComeB) + " and for M is:  "+df.format(equalOutComeM));//localOutcomeB
-		/***************************RETURN FINAL RESULT BASED ON HISTOGRA DISTRIBUTION*/
+		/*System.out.print("\n the overall outcome for B is:  " + df.format(equalOutComeB) + " and for M is:  "+df.format(equalOutComeM));//localOutcomeB
+		*//***************************RETURN FINAL RESULT BASED ON HISTOGRA DISTRIBUTION*//*
 
 		System.out.print("\n\n\n"+"                "+"Histogram Based Model"+"                "+"Gaussian Based Model"+"                "+"Equal Width Model");
 		for(int i = 0; i < counter1 ; i++){//patients.dataStats.B_Count.get(i).length; i++){
@@ -341,32 +333,16 @@ public class kFoldValidator {
 					
 		}
 		System.out.print("\n\n*********************************************************************************************************"+
-						 "\n\nOnverall:  \nB:");
+						 "\n\nOverall:  \nB:");
 		for(int i = 0; i < 6; i+=2){
 			System.out.print("                "+df.format(overAll[i])+"                ");
 		}
 		System.out.print("\nM:");
 		for(int i = 1; i < 6; i+=2){
 			System.out.print("                "+df.format(overAll[i])+"                ");
-		}
+		}*/
 		
-		if(outcomeB > outcomeM){
-			
-			/*System.out.print("\n\nThe FINAL outcome for B is:  "+df.format(outcomeB));
-			System.out.print("\n\nLOSER M is:  "+df.format(outcomeM));
-			System.out.print("\n\n");*/
-			
-			return 0.0;
-			
-		}else{
-			
-			/*System.out.print("\n\nLOSER B is:  "+df.format(outcomeB));			 
-			System.out.print("\n\nThe FINAL outcome for M is:  "+df.format(outcomeM));
-			System.out.print("\n\n");*/
-			
-			return 1.0;
-			
-		}
+		return overAll;
 	}
 	
 	
@@ -389,8 +365,8 @@ public class kFoldValidator {
 		
 		int i = 0;
 		
-		System.out.print("\n\nSearching for:  "+searchVal+" in array:  ");
-		displayArray(dataArray);
+		//System.out.print("\n\nSearching for:  "+searchVal+" in array:  ");
+		//displayArray(dataArray);
 		
 		
 		
@@ -467,7 +443,7 @@ public class kFoldValidator {
 							bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
 							while( (line = br.readLine()) != null && kfold < kFactor){
 							
-								tmpLn = line.split(delimiter);//parse each column by a comma	
+								//tmpLn = line.split(delimiter);//parse each column by a comma	
 				
 									/*for(File file: fileName){
 										
@@ -475,8 +451,6 @@ public class kFoldValidator {
 										//read from file
 										if(file.isFile()){ */
 
-												
-												
 												
 												//learning set
 												//for(int k = 0; k <  breastCancer.dataValueList.size()/kfold; k++){
@@ -499,6 +473,8 @@ public class kFoldValidator {
 								}
 							}
 						}
+			   
+			 /*  System.out.print("\n\nUsing "+kfold+" records to learn\n\n");*/
 										
 						
 						//handle exceptions

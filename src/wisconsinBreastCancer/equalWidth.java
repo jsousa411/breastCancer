@@ -80,7 +80,7 @@ public class equalWidth {
 	
 	public equalWidth(){
 		
-	  
+	  if(M_Count.isEmpty()){
 		M_Count.add(M_MeanRadius);
 		M_Count.add(M_texture);
 		M_Count.add(M_perimeter);
@@ -151,6 +151,7 @@ public class equalWidth {
 				B_Count.get(i)[j] = 0.0;
 			}
 		}
+	  }
 		
 	}
 	

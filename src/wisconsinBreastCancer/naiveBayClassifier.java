@@ -1,13 +1,24 @@
 package wisconsinBreastCancer;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class naiveBayClassifier {
+	
+	//4.iv Evaluation module
+	static kFoldValidator testDriver;
+	
+	//4.iii Naive Bayesian classifier
+	//infrastructure to retain
+	//information learned
+	static breastCancer patients;
 	
 	@SuppressWarnings("static-access")
 	public static void main(String [] args){	
 		
+		final int TOTAL_RECORDS = 568;
 		
+		List<Double[]> driverDataList;
 		//#4.iii(1)  Use Equal Width Binning method
 	    //Look through each column and get the max and min values to use as boundarie parameters.  
 		//the Widths will be hard coded based on observations made in 4.i
@@ -20,286 +31,145 @@ public class naiveBayClassifier {
 		//Its constructor iterates through all the data 
 		//in Compute.java object and counts the number of items
 		//in each attribute range
-		kFoldValidator testDriver = new kFoldValidator();
+		testDriver = new kFoldValidator();
 		
-		testDriver.driver();
+		int totalRecords = 0;
+		int learningSetCount = 0;
 		
+		int[] correctGuess = new int[3];
+		int[] wrongGuess = new int[3];
+		int[] Bcount = new int[3];
+		int[] Mcount = new int[3];
+		int[] falseB = new int[3];
+		int[] falseM = new int[3];
+		Double[] accuracy = new Double[3];
 		
-		breastCancer patients = new breastCancer("KfoldData/");//breastCancer.PATH);
-		
-		
-		
-		
-		DecimalFormat df = new DecimalFormat("####0.000");
-		//df.format()
-		int total = 0;
-		
-		//Below are output for validating results 
-		
-		//This is the output for HISTROGRAM BASED Model
-		System.out.print("\n **********B TYPE*****************  \n");
-		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
-		
-		for(int i = 0; i < Compute.B_Count.size(); i++){//patients.dataStats.B_Count.get(i).length; i++){
+		for(int i = 10; i > 0; i--){
+			totalRecords = 0;
 			
-			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
-			
-			for(int j = 0; j < Compute.B_Count_CONST.get(i).length -1; j++){
-			
-				System.out.print("\nRange:  "+df.format(Compute.B_Count_CONST.get(i)[j+1]- Compute.B_Count_CONST.get(i)[j])+ " for "+ Compute.B_Count_CONST.get(i)[j] + " to "+ Compute.B_Count_CONST.get(i)[j+1]+
-								 ":  COUNT = "+ Compute.B_Count.get(i)[j]);
+			for(int q = 0; q < 3; q++){
 				
-				total += Compute.B_Count.get(i)[j];
-				
-				Compute.totCountB[j] = total;
+				correctGuess[q] = 0;
+				wrongGuess[q] = 0;
+				Bcount[q] = 0;
+				Mcount[q] = 0;
+				falseB[q] = 0;
+				falseM[q] = 0;
+				accuracy[q] = 0.0;
 			}
 			
+			learningSetCount = (TOTAL_RECORDS/i);
+			testDriver.driver(learningSetCount );//this calls the driver
 			
-			System.out.print("\n Total:  "+total);
+			patients = new breastCancer("KfoldData/");//breastCancer.PATH);
 			
-			patients.totalB = total;
+			//test learning set against the whole data set
+			driverDataList = patients.readData1("Data/");//read all the data provided
 			
-			total = 0;
-		}
+			Integer[] mx = Compute.totCountB.clone();
+			int test = patients.dataValueList.size();//this should be the same as learningSetCount
+			
+			
+			totalRecords = driverDataList.size();//TOTAL_RECORDS 
+			for(int j = 0; j < totalRecords; j++){
+			
+				Double[] testArray = driverDataList.get(j);
 				
-		total = 0;
-		System.out.print("\n\n\n **********M TYPE*****************  \n");
-		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
-		
-		
-		for(int i = 0; i < Compute.M_Count.size(); i++){//patients.dataStats.B_Count.get(i).length; i++){
-
-			System.out.print("\n\n\n"+Compute.attributes[i]+"  \n");
-			
-			for(int j = 0; j < Compute.M_Count_CONST.get(i).length-1; j++){
+				//call the driver that classifies the data
+				Double[] classificatinReslt;// = testDriver.classifier(testArray);
 				
-				
-				System.out.print("\nRange:  "+ df.format(Compute.M_Count_CONST.get(i)[j+1]- Compute.M_Count_CONST.get(i)[j])+ " for "+  Compute.M_Count_CONST.get(i)[j] + " to "+ Compute.M_Count_CONST.get(i)[j+1]+
-								 ":  COUNT = "+ Compute.M_Count.get(i)[j]);
-				
-				total += Compute.M_Count.get(i)[j];
-				Compute.totCountM[j] = total;
-			}
-			System.out.print("\n Total:  "+total);
+				classificatinReslt = testDriver.classifier(testArray);
 			
-			patients.totalM = total;
-			total = 0;
-			
-		}
-		
-		//System.out.print("\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$Total M count:  "+patients.totalM+" and total B count: "+ patients.totalB+"\n\n\n");
-		System.out.print("\n\n\n");
-		
-		total = 0;
-		
-		
-		//Below is output for Equal Width Model
-		System.out.print("\n **********Equal Width B*****************  \n");
-		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
-		
-		for(int i = 0; i < equalWidth.B_Count.size(); i++){//patients.dataStats.B_Count.get(i).length; i++){
-			
-			System.out.print("\n\n\n"+ equalWidth.attributes[i%10]+"  \n");
-			
-			int ewSize = equalWidth.B_Count_CONST.get(i).length;
-			
-			for(int j = 0; j < ewSize -1; j++){
-			
-				System.out.print("\nRange:  "+df.format( equalWidth.B_Count_CONST.get(i)[j+1]- equalWidth.B_Count_CONST.get(i)[j])+ " for "+ equalWidth.B_Count_CONST.get(i)[j] + " to "+equalWidth.B_Count_CONST.get(i)[j+1]+
-								 ":  COUNT = "+ equalWidth.B_Count.get(i)[j]);
-				
-				total += equalWidth.B_Count.get(i)[j];
-				equalWidth.totCountB[j] = total;
-				
-			}
-			
-			System.out.print("\n Total:  "+total);
-			//equalWidth.totCountB[i]=total;
-			
-			
-			total = 0;
-		}
-				
-		total = 0;
-		System.out.print("\n\n\n **********Equal Width M TYPE*****************  \n");
-		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
-		
-		
-		for(int i = 0; i < equalWidth.M_Count.size(); i++){//patients.dataStats.B_Count.get(i).length; i++){
-
-			System.out.print("\n\n\n"+equalWidth.attributes[i%10]+"  \n");
-			
-			for(int j = 0; j < equalWidth.M_Count_CONST.get(i).length-1; j++){
-				
-				
-				Double end1 = equalWidth.M_Count_CONST.get(i)[j+1],
-					   end2 = equalWidth.M_Count_CONST.get(i)[j],
-					   end3 = end1-end2;
-				System.out.print("\nRange:  "+df.format(end3)+ " for "+  equalWidth.M_Count_CONST.get(i)[j] + " to "+ equalWidth.M_Count_CONST.get(i)[j+1]+
-								 ":  COUNT = "+ equalWidth.M_Count.get(i)[j]);
-				
-				total += equalWidth.M_Count.get(i)[j];
-				equalWidth.totCountM[j] = total;
-			}
-			System.out.print("\n Total:  "+total);
-			//equalWidth.totCountM[i]=total;
-			total = 0;
-			
-		}
-		
-		
-		System.out.print("\n\n\n");
-		
-		total = 0;
-		
-		//Below is output for Gaussian Base Model
-		System.out.print("\n **********Gaussian B*****************  \n");
-		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
-		
-		for(int i = 0; i < gaussianDistrBtn.B_Count.size(); i++){//patients.dataStats.B_Count.get(i).length; i++){
-			
-			System.out.print("\n\n\n"+ gaussianDistrBtn.attributes[i%10]+"  \n");
-			
-			int ewSize = gaussianDistrBtn.B_Count_CONST.get(i).length;
-			
-			for(int j = 0; j < ewSize  ; j++){
-				
-				Double 	   end1,
-				   end2,
-				   end3,
-				   end4 = 0.0;
-				
-				if(j == 0){
+				//based on the classifier result's 
+				//increment counters
+				for(int q = 0; q < 3; q++){
 					
-					end1 = gaussianDistrBtn.B_Count_CONST.get(i)[j];
-					 
-					 
-					System.out.print("\nRange:  "+df.format(end4)+ " for "+  0.0 + " to "+ 
-						  end1 + ":  COUNT = "+ df.format(gaussianDistrBtn.B_Count.get(i)[j]));
-				}else {
-				
+					Double guessedDiagnosis = 0.0 ;
 					
-					end1 = gaussianDistrBtn.B_Count_CONST.get(i)[j];
-					end2 = gaussianDistrBtn.B_Count_CONST.get(i)[j-1];
-					end3 = 0.0;
-					end4 = 0.0;
-					
-					if(end1 != null && end2 != null)
-					 end3 = end1-end2;
-					else
-						end4 = 0.0;
-					
-					if(end1 == 30000){
-					
-
-						end1 = gaussianDistrBtn.B_Count_CONST.get(i)[j-1];
-						end2 = gaussianDistrBtn.B_Count_CONST.get(i)[j-2];
-						end4 = end3 = end1-end2;
+					//classificatinReslt[q] = {histogram result for B, histogram result for M,
+											//Gaussian result for B, Gaussian result for m,
+											//equal width result for B, equal width result for M}
+					if(classificatinReslt[q*2] > classificatinReslt[(q*2+1)]){
 						
-						System.out.print("\nRange:  "+df.format(end4)+ " for "+  end1 + " to "+ 
-								"remaining"+ ":  COUNT = "+ df.format(gaussianDistrBtn.B_Count.get(i)[j]));
-						total += (int) Math.round( 100.00 *gaussianDistrBtn.B_Count.get(i)[j]/100.00);
-						if(j < gaussianDistrBtn.totCountB.length)
-							gaussianDistrBtn.totCountB[j]++;
-						break;
+						guessedDiagnosis = 0.0;
+					}else{
+						
+						guessedDiagnosis = 1.0;
 					}
-					System.out.print("\nRange:  "+df.format(end3)+ " for "+  end2 + " to "+ 
-							end1+ ":  COUNT = "+ df.format(gaussianDistrBtn.B_Count.get(i)[j]));
+					
+					//Classifer guessed M
+					if(guessedDiagnosis == 1.0){			
+	
+						//M is equivalent to 1.0 is stored in testArray[0] element
+						//and B is equivalent to 0.0 which is stored in  testArray[0] element
+						
+						//If we really provided an M
+						if(testArray[0] == 1.0){
+							
+							correctGuess[q]++;
+							Mcount[q]++;
+							
+						}else{//otherwise we guessed wrong
+							
+							wrongGuess[q]++;
+							falseM[q]++;
+						}
+						
+					//Classifier guessed B
+					}else{
+						
+						//if we really have a B
+						if(testArray[0]== 0.0){
+							Bcount[q]++;
+							correctGuess[q]++;
+							
+						}else{//otherwise we guessed wrong
+							wrongGuess[q]++;
+							falseB[q]++;
+						}
+					}
+				
+				
+				
 				}
-				
-				/*System.out.print("\nRange:  "+df.format(end3)+ " for "+  end2 + " to "+ 
-						end1+ ":  COUNT = "+ gaussianDistrBtn.B_Count.get(i)[j]);*/
-				
-				total += (int) Math.round( 100.00 * gaussianDistrBtn.B_Count.get(i)[j]/100.00);
-				if(j < gaussianDistrBtn.totCountB.length)
-					gaussianDistrBtn.totCountB[j] = total;
+			}//end test driver loop
+			
+			for(int q = 0; q < 3; q++){
+				DecimalFormat df = new DecimalFormat("#");
+		        df.setMaximumFractionDigits(4);
+		        accuracy[q] = (Double)(100.00*(double)correctGuess[q]/(double)totalRecords);
+		        if(q == 0){
+		        	System.out.print("\nResult for Histogram evaluation based distribution:  ");
+		        }else if(q == 1){
+		        	
+		        	System.out.print("\nResult for Gaussian based distribution:  ");
+		        	
+		        }else{
+		        	
+		        	System.out.print("\nResult for Equal Width based distribution:  ");
+		        }
+		        
+				System.out.print("For K = "+(11-i)+"\n");
+				System.out.print("\nLearning set count:  "+learningSetCount);
+				System.out.print("\nTotal records tested:  "+totalRecords);
+				System.out.print("\nTotal correctly guesses:  "+correctGuess[q]);
+				System.out.print("\nTotal wrong guesses:  "+wrongGuess[q]);
+				System.out.print("\n\nCorrect  \tWrong  <---Guess");
+				System.out.print("\n"+Bcount[q]+"\t\t"+falseB[q]+"\t|B");
+				System.out.print("\n"+Mcount[q]+"\t\t"+falseM[q]+"\t|M");
+				System.out.print("\nRate of accuracy:  "+df.format(accuracy[q])+"%");
+				System.out.print("\n\n");
 				
 			}
-			
-			System.out.print("\n Total:  "+total);
-			//equalWidth.totCountB[i]=total;
-			
-			
-			total = 0;
-		}
+			System.out.print("\n******************************************************");
+			 
 				
-		total = 0;
-		System.out.print("\n\n\n **********Gaussian M*****************  \n");
-		System.out.print("\nThe following are the stats value for  Mean Radius:  \n");
+				 
+		 }//end of K loop
 		
-		
-		for(int i = 0; i < gaussianDistrBtn.M_Count.size(); i++){//patients.dataStats.B_Count.get(i).length; i++){
-
-			System.out.print("\n\n\n"+gaussianDistrBtn.attributes[i%10]+"  \n");
-			
-			for(int j = 0; j < gaussianDistrBtn.M_Count_CONST.get(i).length ; j++){
-				
-				Double 	   end1,
-						   end2,
-						   end3,
-						   end4 = 0.0;
-				if(j == 0){
-				
-					end1 = gaussianDistrBtn.M_Count_CONST.get(i)[j];
-					 
-					 
-					System.out.print("\nRange:  "+df.format(end4)+ " for "+  0.0 + " to "+ 
-						  end1 + ":  COUNT = "+ df.format(gaussianDistrBtn.M_Count.get(i)[j]));
-				}else if( j > 0 && j < gaussianDistrBtn.M_Count_CONST.get(i).length){
-				
-					
-					end1 = gaussianDistrBtn.M_Count_CONST.get(i)[j];
-					end2 = gaussianDistrBtn.M_Count_CONST.get(i)[j-1];
-					end4 = end3 = end1-end2;
-					
-					if(end1 == 30000){
-					
-
-						end1 = gaussianDistrBtn.M_Count_CONST.get(i)[j-1];
-						end2 = gaussianDistrBtn.M_Count_CONST.get(i)[j-2];
-						end4 = end3 = end1-end2;
-						
-						System.out.print("\nRange:  "+df.format(end4)+ " for "+  end1 + " to "+ 
-								"remaining"+ ":  COUNT = "+df.format( gaussianDistrBtn.M_Count.get(i)[j]));
-						total += (int) Math.round( 100.00 *gaussianDistrBtn.M_Count.get(i)[j]/100.00);
-						if(j < gaussianDistrBtn.totCountM.length)
-							gaussianDistrBtn.totCountM[j]++;
-						break;
-					}
-					System.out.print("\nRange:  "+df.format(end3)+ " for "+  end2 + " to "+ 
-							end1+ ":  COUNT = "+ df.format(gaussianDistrBtn.M_Count.get(i)[j]));
-				}else if (j+1 < gaussianDistrBtn.M_Count_CONST.get(i).length){
-					
-					/*end1 = gaussianDistrBtn.M_Count_CONST.get(i)[j];
-					end2 = gaussianDistrBtn.M_Count_CONST.get(i)[j-1];
-					end3 = end1-end2;*/
-					
-					end1 = gaussianDistrBtn.M_Count_CONST.get(i)[j];
-					 
-					 
-					System.out.print("\nRange:  "+df.format(end4)+ " for "+  end1 + " to "+ 
-							"remaining"+ ":  COUNT = "+df.format( gaussianDistrBtn.M_Count.get(i)[j]));
-				}else{}
-				
-				
-				
-				total += (int) Math.round( 100.00 *gaussianDistrBtn.M_Count.get(i)[j]/100.00);
-				if(j < gaussianDistrBtn.totCountM.length)
-					gaussianDistrBtn.totCountM[j] = total;
-			}
-			System.out.print("\n Total:  "+total);
-			//equalWidth.totCountM[i]=total;
-			total = 0;
-			
-		}
-		
-		//Call the test driver
-		
-		for(int i = 0; i < 2; i++){
-			testDriver.classifier(patients.dataValueList.get(i).values);
-		}
-		System.out.print("\n\n\n");
-		 
+				 
 	}
+	
+	
 
 }

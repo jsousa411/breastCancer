@@ -26,8 +26,8 @@ public class gaussianDistrBtn {
 										 "symmetry",  
 										 "fractaldimension"};
 		 
-		 static Integer[] totCountB = new Integer[10];
-		 static Integer[] totCountM = new Integer[10];
+		 /*static Integer[] totCountB = new Integer[10];
+		 static Integer[] totCountM = new Integer[10];*/
 		 static Double[]	max		= new Double[10];
 		 static Double[]	min		= new Double[10];
 		 
@@ -80,7 +80,7 @@ public class gaussianDistrBtn {
 		
 		public gaussianDistrBtn(){
 			
-		 
+		 if(M_Count.isEmpty()){
 			
 			M_Count.add(M_MeanRadius);
 			M_Count.add(M_texture);
@@ -150,11 +150,11 @@ public class gaussianDistrBtn {
 					B_Count.get(i)[j] = 0.0;
 				}
 				
-				totCountB[i] = 0;
-				totCountM[i] = 0;
+				/*totCountB[i] = 0;
+				totCountM[i] = 0;*/
 			}
 			
-		
+		 }
 			
 		}
 		

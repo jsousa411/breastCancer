@@ -54,6 +54,25 @@ public class breastCancer {
 	public breastCancer(String filePath){
 				
 		
+		values = new Double[11];
+		probabilityM = new Double[10];
+		probabilityB = new Double[10];	
+		
+		totalM = 0;
+		totalB = 0;
+			
+		 //list with all the data read from file
+		dataValueList = new ArrayList<breastCancer>();
+		
+		dataStats = new Compute();
+		eW 	 = new equalWidth();
+		gd = new gaussianDistrBtn();
+		
+		dataInput = new Double [2][10][400];//store all values read from file
+		dataM1_Counter = 0;
+		dataB1_Counter = 0;
+		
+		
 		readData(filePath);//4.iii(3) gets built here
 		
 		Double widthConst = 0.0;
@@ -507,10 +526,6 @@ public class breastCancer {
 									 
 								   for(int j = 0; j < subArrSize; j++){
 									   
-									   /*System.out.print("\nvalue of i is: "+i +" and value of j is: "
-	+ j+" and \n********length of B_count is: "+ Compute.B_Count.get(i).length+ " \n and &&&&&&length of B_count_CONST is: "
-	+ Compute.B_Count_CONST.get(i).length);*/
-									   
 									 //check which width the current tempArrayValue falls within
 									  if((j+1) < Compute.B_Count_CONST.get(i).length){
 										   if( tempArrayValue >= Compute.B_Count_CONST.get(i)[j] && 
@@ -632,6 +647,109 @@ public class breastCancer {
 		return true;
 		
 	}//end of constructor(string input)
+	
+	
+		//Read data from file at location: filePath
+		//Reads one line at at time and stores it in 
+		//data[] array and then adds this array
+		//to a list<> and returns the list
+		 static public List<Double[]> readData1(String filePath){
+			
+			 List<Double[]> localList = new ArrayList<Double[]>();
+			 Double[] data;
+					
+			File directory = new File(filePath); //path to directory with data files
+			
+			BufferedReader br = null;//buffer reader to read from a file
+			String line = ""; //line read from a file
+			String delimiter = ",";//delimiter for "line"
+			String[] tmpLn;//temporary delimited line, which is used to construct a
+						   //breastCancer object
+			
+			File[] fileName = directory.listFiles();//array of file names 
+													//in the directory		
+		
+			
+			
+			for(File file: fileName){
+				
+				
+				//read from file
+				if(file.isFile()){
+					try{
+					
+						br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
+						
+						while( (line = br.readLine()) != null){
+						
+							tmpLn = line.split(delimiter);//parse each column by a comma						
+							
+							data = new Double[tmpLn.length-1];
+							
+							for(int i = 0; i < tmpLn.length-1; i++){
+								
+								  
+								if(  tmpLn[i+1].equals("M")){
+									
+									data[i] = 1.0;
+									
+								}else if (tmpLn[i+1].equals("B")){
+									
+									data[i] = 0.0;
+									
+								}else{
+									data[i] = Double.valueOf(tmpLn[i+1]);
+								}
+								
+							}
+
+							localList.add(data);
+							
+						} 
+						
+						//handle exceptions
+					} catch (FileNotFoundException e) {
+						
+						e.printStackTrace();
+						
+						
+					} catch (IOException e) {
+						
+						e.printStackTrace();
+						
+						
+					} catch(Exception e){
+						
+						e.printStackTrace();
+						
+						
+					}finally {//close file buffer reader
+						if (br != null) {
+							
+							try {
+								
+								br.close();
+								
+								//catch file close related exception
+							} catch (IOException e) {
+								
+								e.printStackTrace();
+								
+								
+								
+							}
+						}
+					}
+					
+					
+				}
+				
+			}
+
+			//returns true if all data is read successfully
+			return localList;
+			
+		}//end of constructor(string input)
 	
 
 }//end of class breastCancer
