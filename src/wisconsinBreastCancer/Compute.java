@@ -1,3 +1,34 @@
+/* 
+ * Author:  Joao Sousa
+ * SFSU Spring 2014
+ * CSC 869
+ * 04/04/2014
+ * Mini Project # 2
+ * This program performs data classification by implementing the 
+ * Naive Bayesan model
+ * 
+ * This file looks similar to equalWidth.java and gaussianDistrBtn.java
+ * as it's a copy and slight modification to hold the design structure
+ * for this model.
+ * 
+ * Notice the hard coded values for the ranges:  These were based 
+ * on the histogram observation.
+ * 
+ * M_RANGE arrays hold M data for each attribute
+ * B_RANGE arrays hold B data for each attribute
+ * 
+ * The arrays are then inserted into a list
+ * such as: M_Count_CONST or B_Count_CONST (these hold the array with ranges) and
+ * M_Count or B_Count (these hold the frequency count)
+ * 
+ * Some counters and iteration counters are used to 
+ * keep track of the data stored in teh arrays and lists
+ * 
+ * totCountB
+ * totCountM
+ * dataSample
+ * 
+ */
 package wisconsinBreastCancer;
 
 import java.util.ArrayList;
@@ -68,7 +99,7 @@ public class Compute {
 	 static Double[] B_fractaldimension    =  new Double[6]; 
                                           
 	 
-	
+	//Main constructor
 	public Compute(){
 		//if the list is not set yet
 		//initialize it

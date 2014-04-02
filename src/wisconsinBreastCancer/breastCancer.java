@@ -1,3 +1,32 @@
+/* 
+ * Author:  Joao Sousa
+ * SFSU Spring 2014
+ * CSC 869
+ * 04/04/2014
+ * Mini Project # 2
+ * This program performs data classification by implementing the 
+ * Naive Bayesan model
+ * 
+ * To execute the program import package into Eclipse and execute. The program
+ * has all necessary data files were extracted with the project, so they should be
+ * included as part of the package import process
+ * 
+ * 
+breastCancer.java contains code to build/populate the models ranges and also count the frequency of the data within that range.
+
+This class reads data from file that is created by kFoldValidator.java.  kFoldValidator.java creates a file that contains the
+learning set
+
+compute.java is implemented during the instantiation of a breastCancer object while data is being read from a file.  The overloaded
+constructor takes in an array of Double[], so it's necessary to remove B and M from the array and replace it with 0.0 and 1.0 
+to be able to process the data.
+
+Once the range preparation and frequency counting for Compute is implemented populateEqualWidth is called to 
+build the range preparation and frequency for the equal width model. Then  populateGaussianDist(); gets called
+to build the Gaussian data model.  Follow the code on the following constructor:  public breastCancer(String filePath)
+ * 
+ */
+
 package wisconsinBreastCancer;
 
 import java.io.File;
@@ -99,16 +128,16 @@ public class breastCancer {
 				
 				if(j == 0){//initial boundary
 					
-					equalWidth.M_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.min[i]  - widthConst/5.0));
-					equalWidth.B_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.min[i] -  widthConst/5.0));
+					equalWidth.M_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.min[i]  - 1.0));
+					equalWidth.B_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.min[i] -  1.0));
 					
 				}else if( j+1 == equalWidth.WIDTH){//final boundary
 					
 															//make it just a bit bigger because it's not inclusive
 															//so we want to make sure the values at the max(boundary)
 															//get included
-					equalWidth.M_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.max[i] + widthConst/5.0));					
-					equalWidth.B_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.max[i] + widthConst/5.0));
+					equalWidth.M_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.max[i] + 1.0));					
+					equalWidth.B_Count_CONST.get(i)[j] = Double.valueOf(df2.format(equalWidth.max[i] + 1.0));
 					
 				}
 				else{
@@ -118,10 +147,10 @@ public class breastCancer {
 					
 					
 				}
-				//System.out.print(" "+equalWidth.M_Count_CONST.get(i)[j]);
+				
 			}
 			
-			//System.out.print(" with min:  "+ equalWidth.min[i] +" and max:  "+equalWidth.max[i]+"\n\n\n");
+			
 		}
 		
 		//4.iii(1) gets built here
@@ -720,10 +749,11 @@ public class breastCancer {
 			for(File file: fileName){
 				
 				
-				//read from file
+				//does file exist in directory
 				if(file.isFile()){
 					try{
 					
+						//open file to be read
 						br = new BufferedReader(new FileReader(file.getAbsoluteFile()));
 						
 						while( (line = br.readLine()) != null){
@@ -734,7 +764,9 @@ public class breastCancer {
 							
 							for(int i = 0; i < tmpLn.length-1; i++){
 								
-								  
+								  //replace M or B with 1.0 or 0.0
+								//so we don't have to worry about 
+								//number versus letter comparison
 								if(  tmpLn[i+1].equals("M")){
 									
 									data[i] = 1.0;
@@ -750,6 +782,8 @@ public class breastCancer {
 								
 							}
 
+							//store newly read data record into
+							//list
 							localList.add(data);
 							
 						} 

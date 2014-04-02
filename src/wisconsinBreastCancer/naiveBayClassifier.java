@@ -1,8 +1,44 @@
+/* 
+ * Author:  Joao Sousa
+ * SFSU Spring 2014
+ * CSC 869
+ * 04/04/2014
+ * Mini Project # 2
+ * This program performs data classification by implementing the 
+ * Naive Bayesan model
+ * 
+ * To execute the program import package into Eclipse and execute. The program
+ * has all necessary data files were extracted with the project, so they should be
+ * included as part of the package import process
+ *
+ 
+ How to review the code:
+
+The program’s main function is under naiveBayClassifier.java this file, which instantiates breastCancer.java and kFold.java objects.
+
+breastCancer.java contains code to build/populate the models ranges and also count the frequency of the data within that range.
+
+kFold.java contains code to classify the data
+
+naiveBayClassifier.java gets result/data from breastCancer.java, feeds it into kFold.java and then based on the result from kFold.java it determines if a specific data record is B or M, which it then determines if it’s correct or incorrect.  Based on the frequency of correct and incorrect reports from kFold.java, naiveBayClassifier.java’s main function outputs the report seen above.
+Results are displayed to the console.
+
+Compute.java is the class for the Histogram Observation based model.
+
+gaussianDistrBtn.java is the Guassian based model class.
+
+equalWidth.java is the Equal Width based model.
+
+All the model classes get instantiated by breastCancer.java class.
+ * 
+ */
+
 package wisconsinBreastCancer;
 
 import java.text.DecimalFormat;
 import java.util.List;
 
+//This is the main driver of the program.
 public class naiveBayClassifier {
 	
 	//4.iv Evaluation module
@@ -36,15 +72,20 @@ public class naiveBayClassifier {
 		int totalRecords = 0;
 		int learningSetCount = 0;
 		
+		//data structure to hold true/false
+		//results from kFoldValidator.java
 		int[] correctGuess = new int[3];
 		int[] wrongGuess = new int[3];
 		int[] Bcount = new int[3];
 		int[] Mcount = new int[3];
 		int[] falseB = new int[3];
 		int[] falseM = new int[3];
-		Double[] accuracy = new Double[3];
+		Double[] accuracy = new Double[3];//accuracy rate for each model
 		
+		//loop 10 times for K-10 fold
 		for(int i = 10; i > 0; i--){
+			
+			//set all data counters to zero 
 			totalRecords = 0;
 			
 			for(int q = 0; q < 3; q++){
@@ -58,30 +99,33 @@ public class naiveBayClassifier {
 				accuracy[q] = 0.0;
 			}
 			
+			//kfold data volume counter
 			learningSetCount = (TOTAL_RECORDS/i);
+			
+			//tell kFold how much data to be used for learning set
 			testDriver.driver(learningSetCount );//this calls the driver
 			
+			//pass data from kFold to breastCancer for the learning set
 			patients = new breastCancer("KfoldData/");//breastCancer.PATH);
 			
 			//test learning set against the whole data set
 			driverDataList = patients.readData1("Data/");//read all the data provided
 			
-			Integer[] mx = Compute.totCountB.clone();
-			int test = patients.dataValueList.size();//this should be the same as learningSetCount
+			totalRecords = driverDataList.size();//TOTAL_RECORDS
 			
-			
-			totalRecords = driverDataList.size();//TOTAL_RECORDS 
+			//Loop for all the records tested i.e. 568 total records
 			for(int j = 0; j < totalRecords; j++){
 			
+				//Get record to compare it with the result
 				Double[] testArray = driverDataList.get(j);
 				
 				//call the driver that classifies the data
 				Double[] classificatinReslt;// = testDriver.classifier(testArray);
 				
+				//Get result array with 3 result: one for each model
 				classificatinReslt = testDriver.classifier(testArray);
 			
-				//based on the classifier result's 
-				//increment counters
+				//Check the result for each model
 				for(int q = 0; q < 3; q++){
 					
 					Double guessedDiagnosis = 0.0 ;
@@ -141,10 +185,20 @@ public class naiveBayClassifier {
 				}
 			}//end test driver loop
 			
+			
+			//Output final report for each K-Fold
 			for(int q = 0; q < 3; q++){
+				
+				//decimal data formatter to round to specific sig figs
 				DecimalFormat df = new DecimalFormat("#");
+				
+				//set to 4 sig figs
 		        df.setMaximumFractionDigits(4);
+		        
+		        //calculate accurracy for model at value q
 		        accuracy[q] = (Double)(100.00*(double)correctGuess[q]/(double)totalRecords);
+		        
+		        //Display message for the model at q
 		        if(q == 0){
 		        	System.out.print("\nResult for Histogram evaluation based distribution:  ");
 		        }else if(q == 1){
@@ -156,6 +210,7 @@ public class naiveBayClassifier {
 		        	System.out.print("\nResult for Equal Width based distribution:  ");
 		        }
 		        
+		        //Display report content
 				System.out.print("For K = "+(11-i)+"\n");
 				System.out.print("\nLearning set count:  "+learningSetCount);
 				System.out.print("\nTotal records tested:  "+totalRecords);

@@ -1,3 +1,28 @@
+/* 
+ * Author:  Joao Sousa
+ * SFSU Spring 2014
+ * CSC 869
+ * 04/04/2014
+ * Mini Project # 2
+ * This program performs data classification by implementing the 
+ * Naive Bayesan model
+ * 
+  
+kFold.java contains code to classify the data
+
+This file reads data from file under /Data folder and inserts into 
+file in /KFoldData folder, so we can control the size of the learning set: this 
+is done via function static void driver(int kValue){ where KValue is the number
+of records to use for the learning set
+
+This file contains classifier static Double[] classifier(Double[] attributes){
+which returns array of Double overAll[].  overAll is of size 3 and has 3 results
+one for each model.
+
+NOTE: some commented out System.out.Print statments were left in the code
+for debugging purposes
+ * 
+ */
 package wisconsinBreastCancer;
 
 import java.io.BufferedReader;
@@ -14,13 +39,13 @@ import java.util.List;
 
 public class kFoldValidator {
 	
-	static String learnDataPath = "KfoldData/";
-	static int kFactor = 56;
-	static int total = 0;
-	static DecimalFormat df = new DecimalFormat("####0.0000");
-	static breastCancer patients;// = new breastCancer(breastCancer.PATH);
-	static Double[][] resultsAll = new Double[6][10];	
-	static Double[] overAll	= new Double[6];
+	static String learnDataPath = "KfoldData/";//folder to write training data set
+	static int kFactor = 56;//data learning default record limit
+	static int total = 0;//total records
+	static DecimalFormat df = new DecimalFormat("####0.0000");//decimal data formatter
+	static breastCancer patients;//used for data reference of its static members
+	static Double[][] resultsAll = new Double[6][10];//results for B and M data: this array is used for debugging	
+	static Double[] overAll	= new Double[6];//actual results returned to naiveBayCalssifier
 	
 	//This is used to write data to a file 
 	//to control the 10-fold learning data	

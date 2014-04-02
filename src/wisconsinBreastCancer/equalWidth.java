@@ -1,3 +1,40 @@
+
+/* 
+ * Author:  Joao Sousa
+ * SFSU Spring 2014
+ * CSC 869
+ * 04/04/2014
+ * Mini Project # 2
+ * This program performs data classification by implementing the 
+ * Naive Bayesan model
+ * 
+ * This file looks similar to Compute.java and gaussianDistrBtn.java
+ * as it's a copy and slight modification to hold the design structure
+ * for this model.
+ * 
+ * Notice the hard coded values for the ranges:  These were based 
+ * on the histogram observation.
+ * 
+ * M_RANGE arrays hold M data for each attribute
+ * B_RANGE arrays hold B data for each attribute
+ * 
+ * The arrays are then inserted into a list
+ * such as: M_Count_CONST or B_Count_CONST (these hold the array with ranges) and
+ * M_Count or B_Count (these hold the frequency count)
+ * 
+ * Some counters and iteration counters are used to 
+ * keep track of the data stored in teh arrays and lists
+ * 
+ * totCountB
+ * totCountM
+ * dataSample
+ * 
+ * What's different in this file?
+ * 
+ * NO hard coded range values
+ * 
+ */
+
 package wisconsinBreastCancer;
 
 import java.util.ArrayList;
@@ -6,7 +43,7 @@ import java.util.List;
 public class equalWidth {
 
 	 // the graphs had a even width distribution between 14 to 18
-	 static int WIDTH = 6;//based on observation of graphs set to 16
+	 static int WIDTH = 16;//based on observation of graphs set to 16
 	 
 	 static Double[] dataSample;
 	 static List<Double[]> M_Count = new ArrayList<Double[]>();
@@ -78,9 +115,16 @@ public class equalWidth {
 		 static Double[] B_symmetry            =  new Double[WIDTH];     
 		 static Double[] B_fractaldimension    =  new Double[WIDTH];     
 	
+		 //Main constructor
 	public equalWidth(){
 		
+		//If data is not yet initialized,
+		//then set it
 	  if(M_Count.isEmpty()){
+		
+
+			 //Add data structure to list and initialize 
+			 //counters to 0  
 		M_Count.add(M_MeanRadius);
 		M_Count.add(M_texture);
 		M_Count.add(M_perimeter);
